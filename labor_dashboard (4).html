@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>U.S. Labor Market Tracker</title>
+</head>
+<body style="background:#f5f5f5;min-height:100vh;display:flex;justify-content:center;padding:2rem 1rem">
+<div style="max-width:740px;width:100%;background:#fff;border-radius:10px;padding:2rem 1.5rem 2.5rem;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+<style>
+/* ============================================================
+   DASHBOARD BASE TEMPLATE — Claude MFO
+   ============================================================
+   Este archivo es la plantilla madre para dashboards tipo
+   "Fed Meeting Tracker" / "Fed Minutes Tracker". Es un único
+   HTML autocontenido (sin dependencias externas salvo la
+   fuente de Google Fonts), pensado para pegar directo en un
+   artifact o abrir como archivo suelto.
+
+   CÓMO USAR ESTA PLANTILLA:
+   1. Cambiá el <title> y el texto del header (wh h2 / pub-badge).
+   2. Dejá o borrá los tabs según si tu herramienta tiene
+      múltiples "cortes" (meses, versiones, escenarios...).
+   3. Elegí de la sección "COMPONENTES" los bloques que tu
+      herramienta necesita y borrá los que no. Todos son
+      independientes entre sí.
+   4. Si usás gráficos, mirá el bloque JS "CHARTS" al final:
+      rLine() y rBars() son genéricas, solo les pasás tus datos.
+   5. La paleta y tipografía viven en :root — cambiando esas
+      variables reestilás todo el dashboard sin touchear el
+      resto del CSS.
+
+   MÓDULOS ADICIONALES (genéricos, prefijados para no chocar
+   con el resto de las clases — borrá el módulo entero, CSS +
+   HTML + JS, si no lo necesitás):
+   - MÓDULO MATRIZ (prefijo "bb-"): tabla TEMA x PERÍODO con
+     badges clickeables + modales de detalle/texto completo.
+     Ideal cuando hay MUCHOS cortes (5+) y conviene una sola
+     tabla en vez de tabs. Datos de ejemplo: MTOPICS/MMONTHS/MDATA.
+   - MÓDULO ACORDEÓN/FUENTES (prefijos "ac-"/"cmp-"): bullets
+     agrupados por tema y por fuente (ej. bancos/research),
+     con cita en tooltip, tabs internas y tabla comparativa
+     entre fuentes. Datos de ejemplo: FUENTES_DATA/CMP_DATA.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Aller:ital,wght@0,300;0,700;1,300&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Aller',sans-serif!important}
+
+/* ---------- PALETA / TOKENS ----------
+   g    = verde marca (positivo / dove / bueno)
+   g2   = verde claro (borde de acentos suaves)
+   g4   = verde muy claro (fondo de acentos suaves)
+   c    = naranja/coral (negativo / hawk / alerta)
+   cl   = coral claro (borde de acentos de alerta)
+   sl   = slate azulado (texto secundario, labels, acentos neutros)
+   gr3  = gris medio (bordes)
+   gr4  = gris claro (fondos de tarjetas neutras)
+   cb   = gris tarjeta base
+   warn = amarillo/mostaza (advertencia intermedia)
+   hot  = alias de --c, usado en badges de "subiendo/caliente"
+   Cambiá estos 10 valores y toda la herramienta cambia de tono. */
+:root{
+  --g:#7BC143; --g2:#B3D88C; --g4:#E1F1D3;
+  --c:#E07F5C; --cl:#EAA992;
+  --sl:#5D7082;
+  --gr3:#BEBEBE; --gr4:#E6E6E6; --cb:#EBEBEB;
+  --warn:#D9A441; --hot:#E07F5C;
+}
+
+.w{font-family:'Aller',sans-serif;font-weight:300;padding:1.5rem 1rem 2rem;max-width:700px;color:#000;margin:0 auto}
+
+/* ---------- HEADER ---------- */
+.wh{margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between}
+.wh h2{font-size:20px;font-weight:700;color:var(--g);letter-spacing:-.01em}
+.pub-badge{font-size:10px;font-weight:700;letter-spacing:.08em;color:#1a9fcc;text-transform:uppercase;white-space:nowrap}
+
+/* ---------- TABS ----------
+   .tb   = tab simple (períodos/cortes principales)
+   .tbg  = tab "grupal" con acento verde (ej. vistas transversales
+           como "Evolution" o "Charts", separadas de los períodos)
+   .older-wrap = dropdown de "Older" cuando hay demasiados tabs
+   Si tu herramienta no necesita tabs, borrá todo este bloque
+   y el <div class="tabs">...</div> del HTML. */
+.tabs{display:flex;gap:5px;margin-bottom:1.25rem;padding-bottom:1.1rem;border-bottom:1px solid var(--gr4);flex-wrap:wrap;align-items:center}
+.tb,.tbg{padding:6px 14px;font-size:12px;border-radius:4px;cursor:pointer;transition:all .15s;border:none}
+.tb{font-weight:300;border:1px solid var(--gr3)!important;background:transparent;color:#000}
+.tb:hover{background:var(--gr4)}
+.tb.active{background:var(--sl);border-color:var(--sl)!important;color:#fff;font-weight:700}
+.tbg{font-weight:300;border:1px solid var(--g2)!important;background:transparent;color:var(--sl)}
+.tbg:hover{background:var(--g4)}
+.tbg.active{background:var(--g);border-color:var(--g)!important;color:#fff;font-weight:700}
+.older-wrap{position:relative;display:inline-block}
+.older-btn{padding:6px 14px;font-size:12px;border-radius:4px;cursor:pointer;font-weight:300;border:1px solid var(--gr3)!important;background:transparent;color:#000;transition:all .15s}
+.older-btn:hover{background:var(--gr4)}
+.older-btn.has-active{background:var(--sl);border-color:var(--sl)!important;color:#fff;font-weight:700}
+.older-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--gr3);border-radius:5px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:100;min-width:130px;overflow:hidden}
+.older-menu.open{display:block}
+.older-item{display:block;width:100%;padding:7px 14px;font-size:12px;font-weight:300;text-align:left;background:transparent;border:none;cursor:pointer;color:#000;white-space:nowrap}
+.older-item:hover{background:var(--gr4)}
+.older-item.active{background:var(--sl);color:#fff;font-weight:700}
+.mp{display:none}.mp.active{display:block}
+.vtag{font-size:9px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+
+/* ---------- STRIP / STAT CARDS ----------
+   Fila de métricas clave arriba de todo. Dos variantes:
+   .strip      -> grid pareja (2 columnas), para 2-4 KPIs simples
+   .tr + .mc.ffr + .mgrp -> KPI destacado a la izquierda (ffr) +
+                            grupo de mini-KPIs a la derecha */
+.strip{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.mc-sm{background:var(--cb);border-radius:6px;padding:9px 11px;border:1px solid #d4d4d4;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.mc-sm .ml{font-size:9px;color:var(--sl);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:300}
+.mc-sm .mv{font-size:17px;font-weight:700;color:#000;line-height:1}
+.mc-sm .ms{font-size:10.5px;color:var(--sl);margin-top:4px;font-weight:300;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.tr{display:flex;gap:7px;margin-bottom:10px;align-items:stretch}
+.mc{background:var(--cb);border-radius:6px;padding:10px;border:1px solid #d4d4d4}
+.ml{font-size:9px;color:var(--sl);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:300}
+.mv{font-size:16px;font-weight:700;color:#000;line-height:1}
+.ms{font-size:11px;color:#000;margin-top:4px;font-weight:300}
+.mc.ffr{min-width:120px;flex-shrink:0}
+.mgrp{border:1px solid #d4d4d4;border-radius:6px;padding:8px 10px 10px;flex:1}
+.mgrp-title{font-size:9px;color:var(--sl);text-transform:uppercase;letter-spacing:.06em;font-weight:300;margin-bottom:7px}
+.mgrp-inner{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.bh{display:inline-block;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;background:var(--sl);color:#fff}
+
+/* ---------- RESUMEN EJECUTIVO ----------
+   Caja destacada arriba de las secciones, para el TL;DR
+   de todo el panel (3-5 bullets con lo más importante). */
+.exec{background:#EAF0F5;border:1px solid #C7D3DC;border-radius:8px;padding:13px 16px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.exec-t{font-size:10.5px;font-weight:700;color:#34495E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px}
+.exec ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.exec li{position:relative;padding-left:14px;font-size:11.5px;line-height:1.5;color:#24313d;font-weight:300}
+.exec li::before{content:'';position:absolute;left:0;top:5px;width:0;height:0;border-style:solid;border-width:4px 0 4px 6px;border-color:transparent transparent transparent #34495E}
+.exec li b{font-weight:700}
+
+/* ---------- SECCIÓN FIJA (.sec) ----------
+   Tarjeta de sección siempre visible, con título. Usar para
+   contenido que el usuario debería ver sin tener que hacer clic. */
+.sec{background:#fff;border:1px solid var(--gr4);border-radius:6px;padding:13px 15px;margin-bottom:8px}
+.st{font-size:10px;font-weight:700;color:#000;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gr4)}
+
+/* ---------- SECCIÓN COLAPSABLE (details.sec) ----------
+   Alternativa a .sec cuando hay muchas secciones largas:
+   colapsadas por defecto, con número, título y TL;DR visible
+   incluso cerradas. Usar <details><summary>. */
+details.sec{border:1px solid var(--gr4);border-left:3px solid var(--sl);border-radius:8px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:.15s}
+details.sec[open]{border-color:#d8d8d8}
+summary.sh{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:flex-start;gap:10px;background:#fff}
+summary.sh:hover{background:#fafbfc}
+summary.sh::-webkit-details-marker{display:none}
+summary.sh::after{content:'▾';margin-left:auto;color:var(--gr3);font-size:12px;transition:.2s;flex-shrink:0;margin-top:2px}
+details[open] summary.sh::after{transform:rotate(180deg)}
+.numb{width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px;background:var(--sl)}
+.sh-txt{flex:1;min-width:0}
+.sh-t{font-size:13.5px;font-weight:700;color:#000;line-height:1.3}
+.sh-tldr{font-size:11px;color:var(--sl);font-weight:300;margin-top:3px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc{padding:14px 18px 16px 18px;border-top:1px solid var(--gr4)}
+
+/* ---------- LISTA DE BULLETS CON PUNTA ---------- */
+.pl{list-style:none;display:flex;flex-direction:column;gap:11px;margin-top:2px}
+.pli{position:relative;padding-left:16px;font-size:12.5px;line-height:1.6;color:#000;font-weight:300}
+.pli::before{content:'';position:absolute;left:0;top:7px;width:0;height:0;border-style:solid;border-width:4px 0 4px 6px;border-color:transparent transparent transparent var(--g)}
+.pli b{font-weight:700;color:#1a2733}
+.subh{font-size:12.5px;font-weight:700;color:#000;margin:16px 0 7px;display:flex;align-items:center;gap:7px}
+
+/* ---------- BADGES DE ESTADO ----------
+   Para etiquetar una variable como subiendo/bajando/estable/alerta.
+   Combinar .bdg con .hot/.cool/.flat/.warn + una flecha en .ar */
+.bdg{font-size:11.5px;font-weight:700;letter-spacing:0}
+.bdg .ar{font-size:13px;font-weight:700}
+.bdg.hot{color:var(--hot)}
+.bdg.cool{color:#4a7a24}
+.bdg.flat{color:var(--sl)}
+.bdg.warn{color:var(--warn)}
+
+/* ---------- FILAS CLAVE-VALOR (KV) ----------
+   Tabla simple de "variable: valor + nota" dentro de un fondo gris. */
+.kvb{background:var(--gr4);border-radius:5px;overflow:hidden;margin:10px 0}
+.kvr{display:grid;grid-template-columns:170px 1fr;gap:0;padding:7px 12px;border-bottom:1px solid #d8d8d8;align-items:center}
+.kvr:last-child{border-bottom:none}
+.kvl{display:flex;flex-direction:column;gap:2px}
+.kvt{font-size:10px;color:var(--sl);text-transform:uppercase;letter-spacing:.04em;font-weight:300}
+.kvv{font-size:12px;color:#000;font-weight:700}
+.kvn{font-size:12px;color:#000;font-weight:300;line-height:1.4}
+
+/* ---------- FILAS SPREAD (valor + delta + nota) ----------
+   Como KV pero con una tercera columna para la nota/comparación. */
+.spb{background:var(--gr4);border-radius:5px;overflow:hidden}
+.spr{display:grid;grid-template-columns:175px 55px 1fr;gap:0;padding:7px 12px;border-bottom:1px solid #d8d8d8;align-items:center}
+.spr:last-child{border-bottom:none}
+.spl{font-size:12px;color:var(--sl);font-weight:300}
+.spv{font-size:12px;font-weight:700;color:#000}
+.spn{font-size:12px;color:#000;font-weight:300}
+.aru{color:var(--c);font-size:16px;font-weight:700;margin-left:6px;font-style:normal;vertical-align:middle;line-height:1}
+.ard{color:var(--g);font-size:16px;font-weight:700;margin-left:6px;font-style:normal;vertical-align:middle;line-height:1}
+
+/* ---------- SURVEY DIVIDER ----------
+   Section header used to split content by underlying BLS survey
+   (Household vs. Establishment), each with an icon + one-line note. */
+.svy{display:flex;align-items:baseline;gap:10px;margin:26px 0 4px;padding-bottom:8px;border-bottom:2px solid var(--sl)}
+.svy-icon{font-size:15px}
+.svy-t{font-size:14px;font-weight:700;color:var(--g);letter-spacing:-.01em}
+.svy-n{font-size:10.5px;color:var(--sl);font-weight:300;margin-left:auto;text-align:right}
+
+/* ---------- DIVERGING HORIZONTAL BAR CHART ----------
+   Sector payroll contributions: a zero-centered track per row,
+   bar extends left (negative/red) or right (positive/green). */
+.hbar-wrap{display:flex;flex-direction:column;gap:11px;margin:12px 0 4px}
+.hbar-row{display:grid;grid-template-columns:132px 1fr 44px;gap:9px;align-items:center}
+.hbar-label{font-size:11px;color:var(--sl);text-align:right;line-height:1.25}
+.hbar-track{position:relative;height:16px;background:var(--gr4);border-radius:3px}
+.hbar-mid{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--gr3)}
+.hbar-fill{position:absolute;top:0;height:100%;border-radius:2px}
+.hbar-fill.pos{background:var(--g)}
+.hbar-fill.neg{background:var(--c)}
+.hbar-val{font-size:11.5px;font-weight:700;color:#000}
+.hbar-val.pos{color:#3D6E1A}
+.hbar-val.neg{color:#A8411A}
+
+/* ---------- GAUGE / TERMÓMETRO (dove-hawk, bajo-alto, etc.) ----------
+   Barra horizontal con un punto que marca posición entre dos polos. */
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ti{padding:10px 11px;border-radius:5px;background:var(--gr4)}
+.til{font-size:10px;color:var(--sl);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;font-weight:300}
+.tiv{font-size:12px;color:#000;font-weight:700}
+.tin{font-size:12px;color:#000;margin-top:3px;line-height:1.4;font-weight:300}
+.tor{display:flex;align-items:center;gap:8px;margin-top:8px}
+.tol{font-size:11px;font-weight:300;white-space:nowrap}
+.tol.dove{color:var(--g)}.tol.hawk{color:var(--c)}
+.tt2{flex:1;height:5px;border-radius:3px;background:var(--gr3);position:relative}
+.tn{position:absolute;top:-3px;width:11px;height:11px;border-radius:50%;background:var(--c);border:2px solid #fff;transform:translateX(-50%);box-shadow:0 0 0 1px var(--c)}
+
+/* ---------- LISTA DE RIESGOS (con triángulo de severidad) ----------
+   .rh = alto (naranja), .rm = medio (naranja claro), .rg = bajo/positivo (verde) */
+.rl{list-style:none;display:flex;flex-direction:column;gap:6px}
+.ri{display:flex;align-items:center;gap:7px;font-size:12px;color:#000;line-height:1.4;font-weight:300}
+.rt{flex-shrink:0;width:0;height:0;border-style:solid}
+.rh{border-width:5px 0 5px 8px;border-color:transparent transparent transparent var(--c)}
+.rm{border-width:5px 0 5px 8px;border-color:transparent transparent transparent var(--cl)}
+.rg{border-width:5px 0 5px 8px;border-color:transparent transparent transparent var(--g)}
+
+/* ---------- PÍLDORAS DE VOTO / ETIQUETAS ----------
+   .vf = a favor / neutral, .vd = dissent tipo A (verde), .vh = dissent tipo B (naranja) */
+.vr{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0 6px}
+.vc{font-size:11px;padding:3px 9px;border-radius:3px;font-weight:300}
+.vf{background:var(--gr4);color:#000;border:1px solid var(--gr3)}
+.vd{background:var(--g4);color:#000;border:1px solid var(--g2)}
+.vh{background:#fdeee9;color:var(--c);border:1px solid var(--cl)}
+.vn{position:relative;padding-left:15px;font-size:12px;color:#000;margin-top:6px;line-height:1.5;font-weight:300}
+.vn::before{content:'';position:absolute;left:0;top:6px;width:0;height:0;border-style:solid;border-width:4px 0 4px 6px;border-color:transparent transparent transparent var(--g)}
+.legend{display:flex;flex-direction:column;gap:4px;margin:4px 0 2px}
+.lg{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--sl);font-weight:300}
+.ld{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+/* ---------- CITA DESTACADA ---------- */
+.qb{background:var(--gr4);border-left:3px solid var(--gr3);padding:10px 13px;border-radius:0 5px 5px 0;font-size:12px;color:#000;line-height:1.6;font-weight:300;font-style:italic;margin-top:10px}
+.qb b{font-weight:700;font-style:italic}
+.qa{font-size:11px;color:var(--sl);margin-top:6px;font-style:normal;font-weight:300}
+
+/* ---------- TARJETAS DE INSIGHT / IMPLICACIÓN ----------
+   .hi = alta prioridad, .me = media, .lo = baja/positiva */
+.ii{border-left:3px solid var(--gr3);padding:7px 11px;margin-bottom:6px;background:var(--gr4);border-radius:0 5px 5px 0}
+.ii.hi{border-left-color:var(--c)}.ii.me{border-left-color:var(--cl)}.ii.lo{border-left-color:var(--g)}
+.iit{font-size:12px;font-weight:700;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iib{font-size:12px;color:#000;line-height:1.3;font-weight:300;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+
+/* ---------- TABLA COMPACTA ---------- */
+.ctb{width:100%;border-collapse:collapse;font-size:12px;font-weight:300;table-layout:fixed}
+.ctb th{text-align:left;padding:6px 10px;color:#000;font-weight:700;border-bottom:2px solid var(--g);font-size:11px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.ctb td{padding:0 10px;color:#000;font-weight:300;border-bottom:1px solid var(--gr4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;height:30px;line-height:30px;vertical-align:middle}
+.ctb tr:last-child td{border-bottom:none}
+.ctb tr:nth-child(even) td{background:var(--gr4)}
+.ac{color:var(--c)}
+
+/* ---------- MINI BLOQUES (barras de sesgo, etc.) ---------- */
+.bs{display:flex;flex-direction:column;gap:4px;max-width:340px}
+.bi{background:var(--gr4);border-radius:5px;padding:9px 12px}
+.bd{font-size:10px;color:var(--sl);text-transform:uppercase;letter-spacing:.05em;font-weight:300;margin-bottom:3px}
+.bt{display:flex;align-items:center;gap:8px;margin-top:6px}
+.bml{font-size:10px;font-weight:300;white-space:nowrap}
+.bml.dove{color:var(--g)}.bml.hawk{color:var(--c)}
+
+/* ---------- GRÁFICOS (canvas) ----------
+   Cada gráfico vive dentro de un .cs (mismo estilo que .sec) con
+   un wrapper de ancho variable (id="wN") y el <canvas id="cN">.
+   El JS lo redibuja al abrir el tab de charts. */
+.cs{background:#fff;border:1px solid var(--gr4);border-radius:6px;padding:13px 15px;margin-bottom:8px}
+.ct{font-size:10px;font-weight:700;color:#000;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gr4)}
+.cw{width:100%;position:relative;cursor:crosshair}
+.cw canvas{display:block}
+.cl{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:#000;font-weight:300}
+.ll{width:16px;height:2px;border-radius:1px;flex-shrink:0}
+.ld2{width:16px;height:0;border-top:2px dashed;flex-shrink:0}
+.lb{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.cnote{font-size:10px;color:var(--sl);margin-top:12px;padding-top:9px;border-top:1px dashed var(--gr4);font-style:italic;font-weight:300}
+
+/* ---------- TOOLTIP FLOTANTE (para gráficos) ---------- */
+.tooltip{position:fixed;background:#1B2127;color:#fff;font-size:11px;font-weight:300;padding:5px 9px;border-radius:4px;pointer-events:none;display:none;z-index:9999;white-space:nowrap;line-height:1.6}
+
+/* ---------- NOTA AL PIE ---------- */
+.note{font-size:10px;color:var(--sl);font-style:italic;margin-top:14px;padding-top:10px;border-top:1px solid var(--gr4);line-height:1.4}
+
+/* ---------- LINK A PDF / FUENTE ---------- */
+.pdfbtn{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--sl);text-decoration:none;border:1px solid var(--gr3);background:var(--cb);padding:7px 14px;border-radius:6px;margin-top:8px;font-weight:700;transition:.15s}
+.pdfbtn .picon{font-size:16px}
+.pdfbtn:hover{background:var(--gr4);border-color:var(--sl)}
+
+/* ============================================================
+   MÓDULO: TABLA MATRIZ / HEATMAP (estilo "Beige Book Tracker")
+   ============================================================
+   Alternativa a los tabs por período: una sola tabla con
+   TEMA (fila) x PERÍODO (columna), donde cada celda es un badge
+   clickeable (bb-badge) que abre un modal con el detalle.
+   Usar cuando la herramienta compara MUCHOS temas a lo largo de
+   MUCHOS períodos a la vez (más de 4-5 cortes), en vez del
+   esquema de tabs de arriba (mejor para pocos cortes).
+   Prefijo "bb-" para no chocar con el resto de las clases. */
+.bb-wrap{overflow-x:auto;padding-bottom:6px}
+.bb-wrap::-webkit-scrollbar{height:6px}
+.bb-wrap::-webkit-scrollbar-thumb{background:var(--gr3);border-radius:99px}
+.bb-table{border-collapse:collapse;width:auto}
+.bb-table thead th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#000;padding:0 8px 10px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--gr4);background:#fff}
+.bb-table thead th.bb-topic-h{text-align:left;padding-left:0;min-width:170px;position:sticky;left:0;z-index:3;background:#fff}
+.bb-table thead th.bb-month-h{width:150px;min-width:150px;cursor:pointer}
+.bb-table thead th.bb-month-h:hover{color:var(--g);text-decoration:underline;text-underline-offset:3px}
+.bb-table thead th.bb-latest{color:var(--g)}
+.bb-table tbody tr{border-bottom:1px solid var(--gr4)}
+.bb-table tbody tr:hover{background:var(--cb)}
+.bb-table tbody tr:last-child{border-bottom:none}
+.bb-topic-cell{padding:7px 14px 7px 0;white-space:nowrap;position:sticky;left:0;z-index:2;background:#fff}
+.bb-table tbody tr:hover .bb-topic-cell{background:var(--cb)}
+.bb-topic-name{font-size:12.5px;font-weight:700;color:#000}
+.bb-data-cell{padding:5px 7px;text-align:center;vertical-align:middle}
+.bb-badge{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:5px 10px;border-radius:20px;cursor:pointer;transition:all .15s;border:1px solid transparent;width:140px;white-space:nowrap;font-size:11.5px;font-weight:700}
+.bb-badge:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.12)}
+.bb-badge.pos{background:var(--g4);border-color:var(--g2);color:#3D6E1A}
+.bb-badge.neg{background:#fce9e2;border-color:var(--cl);color:#A8411A}
+.bb-badge.flat{background:var(--gr4);border-color:var(--gr3);color:var(--sl)}
+.bb-badge.hot{background:#fde0d4;border-color:var(--cl);color:#8A3010}
+.bb-empty-cell{display:inline-block;width:70px;height:30px;border-radius:5px;background:var(--gr4);border:1px dashed var(--gr3)}
+.bb-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.bb-legend-item{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--sl)}
+.bb-legend-dot{width:9px;height:9px;border-radius:50%}
+.bb-empty-state{padding:50px 20px;text-align:center;color:var(--sl)}
+.bb-empty-state .bb-es-icon{font-size:32px;margin-bottom:10px;opacity:.5}
+.bb-empty-state .bb-es-title{font-size:12.5px;font-weight:700;margin-bottom:4px;color:#000}
+
+/* ---- Modal genérico (detalle de celda / texto completo) ----
+   Reutilizable para cualquier "click para ver más". */
+.md-overlay{display:none;position:fixed;inset:0;background:rgba(5,7,12,.85);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center}
+.md-overlay.active{display:flex}
+.md-box{background:#fff;border:1px solid var(--gr3);border-radius:10px;width:620px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.md-head{padding:16px 20px 13px;border-bottom:1px solid var(--gr4);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.md-meta{display:flex;flex-direction:column;gap:3px}
+.md-period{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sl)}
+.md-topic{font-size:14.5px;font-weight:700;color:#000}
+.md-close{background:none;border:none;color:var(--sl);font-size:17px;cursor:pointer;padding:2px 6px;flex-shrink:0}
+.md-close:hover{color:#000}
+.md-body{padding:16px 20px 20px}
+.md-bullets{list-style:none;display:flex;flex-direction:column;gap:9px}
+.md-bullets li{font-size:12.5px;line-height:1.6;color:#000;font-weight:300;padding-left:16px;position:relative}
+.md-bullets li::before{content:'▶';color:var(--gr3);font-size:9px;position:absolute;left:0;top:4px}
+.md-bullets li b{font-weight:700}
+
+/* ============================================================
+   MÓDULO: ACORDEÓN MULTI-FUENTE + TABLA COMPARATIVA
+   (estilo "Bullets RFI")
+   ============================================================
+   Para herramientas que agrupan bullets por TEMA y, dentro de
+   cada tema, por FUENTE (ej. bancos/research houses), con cita
+   de fuente en tooltip. Incluye tabs internas y una tabla
+   comparativa lado a lado. Prefijo "ac-" para el acordeón y
+   "cmp-" para la tabla comparativa. */
+.ac-tabs{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.ac-tab{font-size:12px;font-weight:700;padding:7px 18px;border-radius:4px;border:1.5px solid var(--gr3);background:transparent;color:var(--sl);cursor:pointer;transition:all .15s;white-space:nowrap}
+.ac-tab:hover{border-color:var(--sl);color:#000}
+.ac-tab.active{background:var(--sl);border-color:var(--sl);color:#fff}
+.ac-panel{display:none}
+.ac-panel.active{display:block}
+
+.ac-list{display:flex;flex-direction:column;gap:6px}
+.ac-item{border-radius:6px;overflow:hidden}
+.ac-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;background:var(--gr4);transition:background .15s;gap:12px}
+.ac-header:hover{background:var(--cb)}
+.ac-item.open .ac-header{background:var(--cb)}
+.ac-title{font-size:13px;font-weight:700;color:#000}
+.ac-chevron{color:#000;transition:transform .2s;flex-shrink:0}
+.ac-item.open .ac-chevron{transform:rotate(180deg)}
+.ac-body{display:none;padding:18px 20px 20px;background:#fff;border:1px solid var(--gr4);border-top:none;border-radius:0 0 6px 6px}
+.ac-item.open .ac-body{display:block}
+/* Variante destacada (ej. "biblioteca de fuentes") */
+.ac-item.ac-highlight .ac-header{background:var(--g);color:#fff}
+.ac-item.ac-highlight .ac-header:hover,.ac-item.ac-highlight.open .ac-header{background:#5a9030}
+.ac-item.ac-highlight .ac-title,.ac-item.ac-highlight .ac-chevron{color:#fff}
+.ac-item.ac-highlight .ac-body{background:var(--g4);border-color:var(--g2)}
+
+.ac-source-block{display:flex;flex-direction:column;gap:6px}
+.ac-source-block+.ac-source-block{margin-top:16px;padding-top:14px;border-top:1px dashed var(--gr3)}
+.ac-group-name{font-size:11px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.ac-group+.ac-group{margin-top:18px;padding-top:18px;border-top:1px solid var(--gr4)}
+
+/* Cita de fuente con tooltip flotante (aparece al hover) */
+.src-tip-wrap{position:relative;flex:1;display:flex;align-items:center}
+.src-tip-wrap .src-tip{display:none;position:absolute;bottom:calc(100% + 6px);left:0;background:#1B2127;color:#fff;font-size:10.5px;font-weight:300;padding:5px 9px;border-radius:4px;white-space:nowrap;pointer-events:none;z-index:10;line-height:1.5}
+.src-tip-wrap .src-tip::after{content:'';position:absolute;top:100%;left:14px;border:5px solid transparent;border-top-color:#1B2127}
+.src-tip-wrap:hover .src-tip{display:block}
+.src-cite{font-size:10px;color:var(--sl);font-style:italic;margin-top:5px}
+
+/* Toggle "ver histórico" dentro de un item de acordeón */
+.hist-toggle{display:flex;align-items:center;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid var(--gr4);background:none;border-left:none;border-right:none;border-bottom:none;cursor:pointer;width:100%;text-align:left;font-size:9.5px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.08em}
+.hist-toggle:hover{color:#000}
+.hist-toggle .ar{transition:transform .2s;flex-shrink:0}
+.hist-toggle.open .ar{transform:rotate(180deg)}
+.hist-content{display:none;margin-top:12px}
+.hist-content.open{display:block;background:var(--gr4);border-left:2px solid var(--gr3);border-radius:0 4px 4px 0;padding:12px 14px}
+
+/* ---- Tabla comparativa multi-fuente (ej. proyecciones por banco) ---- */
+.cmp-table{width:100%;border-collapse:collapse;font-size:11.5px;table-layout:fixed}
+.cmp-table thead th{background:var(--sl);color:#fff;padding:8px 10px;font-size:11px;font-weight:700;text-align:center;border-right:1px solid rgba(255,255,255,.18);white-space:nowrap}
+.cmp-table thead th.cmp-lh{text-align:left;padding-left:10px;border-right:2px solid rgba(255,255,255,.25)}
+.cmp-table thead th:last-child{border-right:none}
+.cmp-table tbody td{padding:6px 10px;background:#fff;border-bottom:1px solid var(--gr4);border-right:1px solid var(--gr4);text-align:center;color:#000;vertical-align:middle}
+.cmp-table tbody td.cmp-lh{text-align:left;font-weight:700;padding-left:10px;border-right:2px solid var(--gr4);white-space:nowrap}
+.cmp-table tbody td:last-child{border-right:none}
+.cmp-table tbody tr:last-child td{border-bottom:none}
+.cmp-na{color:var(--gr3);font-size:11px}
+.cmp-src-note{margin-top:14px;font-size:10px;color:var(--sl);font-style:italic;line-height:1.6}
+.cmp-src-note b{font-style:normal;color:#000;font-weight:700}
+</style>
+
+<div class="tooltip" id="tooltip"></div>
+<div class="w">
+
+  <!-- ====================== HEADER ====================== -->
+  <div class="wh">
+    <h2>U.S. Labor Market Tracker</h2>
+    <span class="pub-badge">BLS · Employment Situation</span>
+  </div>
+
+  <!-- ====================== TABS ======================
+       Borrá lo que no uses. Cada botón llama a sp('id', this)
+       y muestra el panel con id="panel-id" correspondiente.
+
+       LOS BOTONES USAN LETRAS (A, B, C...) A PROPÓSITO:
+       así podés decirle a Claude "usá la vista C" o "armá algo
+       como la B" sin tener que describir el layout entero.
+       Mapeo de esta plantilla (actualizalo si agregás/borrás
+       módulos, para no perder la referencia):
+         A = Corte simple con secciones fijas (KPIs, resumen
+             ejecutivo, gauge, KV, riesgos, votos, cita, insights)
+         B = Corte con secciones colapsables numeradas (details)
+         C = Charts (gráficos de línea/barras en canvas)
+         D = Matriz tema x período con badges + modales
+         E = Acordeón multi-fuente + tabla comparativa -->
+  <div class="tabs" id="tabs">
+    <button class="tb active" onclick="sp('jul26',this)">Jul '26</button>
+    <button class="tb" onclick="sp('jun26',this)">Jun '26</button>
+    <button class="tbg" onclick="sp('charts',this)">Charts</button>
+    <button class="tbg" onclick="sp('matrix',this)">Evolution</button>
+  </div>
+
+  <!-- ====================== PANEL A — JULY 2026 ====================== -->
+  <div class="mp active" id="panel-jul26">
+
+    <!-- Simple KPI strip -->
+    <div class="strip">
+      <div class="mc-sm"><div class="ml">Nonfarm Payrolls</div><div class="mv">-23K</div><div class="ms">vs. +20K Jun (rev.)</div></div>
+      <div class="mc-sm"><div class="ml">Unemployment Rate</div><div class="mv">4.1%</div><div class="ms">vs. 4.2% Jun</div></div>
+    </div>
+
+    <!-- Executive summary -->
+    <div class="exec">
+      <div class="exec-t">Executive Summary</div>
+      <ul>
+        <li><b>Payrolls turned negative:</b> nonfarm employment fell by 23,000, well below the +34,000/month average of the past 12 months. May and June were also revised down by a combined 103,000.</li>
+        <li><b>Unemployment fell, but for mixed reasons:</b> the rate eased to 4.1% (from 4.2%), driven by declines in teen (12.1%) and Hispanic (4.6%) unemployment; at the same time, temporary layoffs rose by 153,000, to 921,000.</li>
+        <li><b>Losses were concentrated:</b> local government education (-50K) and retail trade (-19K) drove the weakness; health care (+22K) kept trending up, but at a slower pace than its 12-month average (+36K).</li>
+        <li><b>No inflationary wage signal:</b> average hourly earnings rose just 2 cents ($37.62), +3.2% year-over-year, with no acceleration.</li>
+        <li><b>Watch the calendar:</b> the preliminary annual benchmark revision is due August 28 and could meaningfully alter the recent payroll trend narrative.</li>
+      </ul>
+    </div>
+
+    <!-- ================= HOUSEHOLD SURVEY ================= -->
+    <div class="svy">
+      <span class="svy-t">Household Survey</span>
+      <span class="svy-n">~60,000 households · unemployment & demographics</span>
+    </div>
+
+    <div class="sec">
+      <div class="st">Labor Force Overview</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">People unemployed</div><div class="spv">6.9M<span class="ard">↓</span></div><div class="spn">Down 178K from June (7.1M).</div></div>
+        <div class="spr"><div class="spl">Labor force participation</div><div class="spv">61.4%<span class="ard">↓</span></div><div class="spn">-0.1pp from June; down 0.7pp since January.</div></div>
+        <div class="spr"><div class="spl">Employment-population ratio</div><div class="spv">58.9%<span class="ard">↓</span></div><div class="spn">-0.1pp from June; down 0.5pp since January.</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="st">Unemployment Rate by Group</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">Total (16+)</div><div class="spv">4.1%<span class="ard">↓</span></div><div class="spn">vs. 4.2% in June.</div></div>
+        <div class="spr"><div class="spl">Adult men</div><div class="spv">3.9%</div><div class="spn">Unchanged from June.</div></div>
+        <div class="spr"><div class="spl">Adult women</div><div class="spv">3.7%</div><div class="spn">Unchanged from June.</div></div>
+        <div class="spr"><div class="spl">Teenagers</div><div class="spv">12.1%<span class="ard">↓</span></div><div class="spn">Sharp drop from 14.6% in June.</div></div>
+        <div class="spr"><div class="spl">White</div><div class="spv">3.6%</div><div class="spn">Unchanged from June.</div></div>
+        <div class="spr"><div class="spl">Black</div><div class="spv">6.3%<span class="ard">↓</span></div><div class="spn">Down from 6.6% in June.</div></div>
+        <div class="spr"><div class="spl">Asian</div><div class="spv">4.0%</div><div class="spn">Unchanged from June.</div></div>
+        <div class="spr"><div class="spl">Hispanic</div><div class="spv">4.6%<span class="ard">↓</span></div><div class="spn">Down from 5.2% in June.</div></div>
+      </div>
+    </div>
+
+    <!-- Part-time and multiple jobholders -->
+    <div class="sec">
+      <div class="st">Part-Time Employment & Multiple Jobholders</div>
+      <div class="kvb">
+        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for economic reasons</div><div class="kvv">4.80M</div></div><div class="kvn">Little changed; includes 3.02M on reduced hours/slack work and 1.43M who could only find part-time work.</div></div>
+        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for noneconomic reasons</div><div class="kvv">22.77M</div></div><div class="kvn">People working part-time by choice (school, family care, etc.).</div></div>
+        <div class="kvr"><div class="kvl"><div class="kvt">Multiple jobholders</div><div class="kvv">8.69M</div></div><div class="kvn">5.4% of total employed — edged up slightly from recent months.</div></div>
+      </div>
+    </div>
+
+    <!-- Alternative measures of underutilization -->
+    <div class="sec">
+      <div class="st">Alternative Measures of Underutilization (U-1 to U-6)</div>
+      <table class="ctb">
+        <thead><tr><th>Measure</th><th>Jul '26</th><th>Jun '26</th></tr></thead>
+        <tbody>
+          <tr><td>U-1 (15+ weeks)</td><td>1.7%</td><td>1.8%</td></tr>
+          <tr><td>U-2 (job losers)</td><td>2.0%</td><td>1.9%</td></tr>
+          <tr><td>U-3 (official rate)</td><td>4.1%</td><td>4.2%</td></tr>
+          <tr><td>U-4 (+ discouraged)</td><td>4.4%</td><td>4.5%</td></tr>
+          <tr><td>U-5 (+ marginally attached)</td><td>5.1%</td><td>5.2%</td></tr>
+          <tr><td>U-6 (+ part-time underemployed)</td><td>7.9%</td><td>7.9%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ================= ESTABLISHMENT SURVEY ================= -->
+    <div class="svy">
+      <span class="svy-t">Establishment Survey</span>
+      <span class="svy-n">~119,000 employers · payrolls, wages & hours</span>
+    </div>
+
+    <!-- Payrolls by sector — diverging bar chart -->
+    <div class="sec">
+      <div class="st">Nonfarm Payrolls by Sector (change, thousands)</div>
+      <div class="hbar-wrap">
+        <div class="hbar-row">
+          <div class="hbar-label">Health care</div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill pos" style="left:50%;width:22%"></div></div>
+          <div class="hbar-val pos">+22K</div>
+        </div>
+        <div class="hbar-row">
+          <div class="hbar-label">Financial activities</div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill neg" style="left:36%;width:14%"></div></div>
+          <div class="hbar-val neg">-14K</div>
+        </div>
+        <div class="hbar-row">
+          <div class="hbar-label">Retail trade</div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill neg" style="left:31%;width:19%"></div></div>
+          <div class="hbar-val neg">-19K</div>
+        </div>
+        <div class="hbar-row">
+          <div class="hbar-label">Local govt. education</div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill neg" style="left:0%;width:50%"></div></div>
+          <div class="hbar-val neg">-50K</div>
+        </div>
+      </div>
+      <div class="cnote">Only sectors explicitly called out in the release; all others (mining, construction, manufacturing, wholesale trade, transportation, information, professional services, social assistance, leisure/hospitality, other services) were little changed. Government overall was -53K, mostly the local education decline above.</div>
+    </div>
+
+    <!-- Wages, hours & breadth of the expansion -->
+    <div class="sec">
+      <div class="st">Wages, Hours & Breadth of the Expansion</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">Avg. hourly earnings</div><div class="spv">$37.62</div><div class="spn">+2¢ in the month; +3.2% year-over-year.</div></div>
+        <div class="spr"><div class="spl">Avg. workweek</div><div class="spv">34.3 hrs</div><div class="spn">Unchanged; manufacturing also flat at 40.4 hrs.</div></div>
+        <div class="spr"><div class="spl">Diffusion index (private)</div><div class="spv">51.8</div><div class="spn">Down from 54.2 in May — just above 50, so gains and losses were roughly balanced across the 250 tracked industries.</div></div>
+        <div class="spr"><div class="spl">Diffusion index (mfg.)</div><div class="spv">50.0</div><div class="spn">Down sharply from 56.9 in June — manufacturing expansion narrowed to a coin-flip across industries.</div></div>
+      </div>
+    </div>
+
+    <!-- Revisions -->
+    <div class="sec">
+      <div class="st">Revisions to Prior Months</div>
+      <ul class="rl">
+        <li class="ri"><span class="rt rh"></span>May 2026 revised from +129K to +63K (-66K).</li>
+        <li class="ri"><span class="rt rh"></span>June 2026 revised from +57K to +20K (-37K).</li>
+        <li class="ri"><span class="rt rm"></span>Combined: 103K fewer jobs than originally reported for May-June.</li>
+      </ul>
+    </div>
+
+    <!-- Source link -->
+    <a class="pdfbtn" href="https://www.bls.gov/news.release/empsit.htm" target="_blank"><span class="picon">📄</span> View full release on BLS.gov</a>
+  </div>
+
+  <!-- ====================== PANEL — JUNE 2026 ====================== -->
+  <div class="mp" id="panel-jun26">
+
+    <!-- Simple KPI strip -->
+    <div class="strip">
+      <div class="mc-sm"><div class="ml">Nonfarm Payrolls</div><div class="mv">+57K</div><div class="ms">vs. +129K May (rev.)</div></div>
+      <div class="mc-sm"><div class="ml">Unemployment Rate</div><div class="mv">4.2%</div><div class="ms">vs. 4.3% May</div></div>
+    </div>
+
+    <!-- Executive summary -->
+    <div class="exec">
+      <div class="exec-t">Executive Summary</div>
+      <ul>
+        <li><b>Payrolls roughly on trend:</b> nonfarm employment rose by 57,000, close to the +36,000/month average of the past 12 months. April and May were revised down by a combined 74,000.</li>
+        <li><b>Unemployment eased slightly:</b> the rate fell to 4.2% (from 4.3%), with 7.1 million people unemployed; participation dropped 0.3pp to 61.5% and the employment-population ratio slipped to 59.0%.</li>
+        <li><b>Growth concentrated in services:</b> professional and business services (+36K), social assistance (+25K) and health care (+22K) kept trending up; leisure and hospitality lost 61,000 jobs on weak seasonal hiring.</li>
+        <li><b>Wages steady:</b> average hourly earnings rose 13 cents to $37.64 (+3.5% year-over-year), with no sign of acceleration.</li>
+        <li><b>Watch the calendar:</b> the July 2026 Employment Situation report is due August 7, and the preliminary annual benchmark revision is due August 28, 2026.</li>
+      </ul>
+    </div>
+
+    <!-- ================= HOUSEHOLD SURVEY ================= -->
+    <div class="svy">
+      <span class="svy-t">Household Survey</span>
+      <span class="svy-n">~60,000 households · unemployment & demographics</span>
+    </div>
+
+    <div class="sec">
+      <div class="st">Labor Force Overview</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">People unemployed</div><div class="spv">7.1M<span class="ard">↓</span></div><div class="spn">Little changed from May (7.3M).</div></div>
+        <div class="spr"><div class="spl">Labor force participation</div><div class="spv">61.5%<span class="ard">↓</span></div><div class="spn">-0.3pp from May.</div></div>
+        <div class="spr"><div class="spl">Employment-population ratio</div><div class="spv">59.0%<span class="ard">↓</span></div><div class="spn">-0.2pp from May.</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="st">Unemployment Rate by Group</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">Total (16+)</div><div class="spv">4.2%<span class="ard">↓</span></div><div class="spn">vs. 4.3% in May.</div></div>
+        <div class="spr"><div class="spl">Adult men</div><div class="spv">3.9%<span class="ard">↓</span></div><div class="spn">Down from 4.0% in May.</div></div>
+        <div class="spr"><div class="spl">Adult women</div><div class="spv">3.7%<span class="ard">↓</span></div><div class="spn">Down from 3.8% in May.</div></div>
+        <div class="spr"><div class="spl">Teenagers</div><div class="spv">14.6%<span class="ard">↓</span></div><div class="spn">Down slightly from 14.7% in May.</div></div>
+        <div class="spr"><div class="spl">White</div><div class="spv">3.6%<span class="ard">↓</span></div><div class="spn">Down from 3.8% in May.</div></div>
+        <div class="spr"><div class="spl">Black</div><div class="spv">6.6%</div><div class="spn">Unchanged from May.</div></div>
+        <div class="spr"><div class="spl">Asian</div><div class="spv">3.9%<span class="aru">↑</span></div><div class="spn">Up from 3.8% in May.</div></div>
+        <div class="spr"><div class="spl">Hispanic</div><div class="spv">5.2%<span class="aru">↑</span></div><div class="spn">Up from 5.0% in May.</div></div>
+      </div>
+    </div>
+
+    <!-- Part-time and multiple jobholders -->
+    <div class="sec">
+      <div class="st">Part-Time Employment & Multiple Jobholders</div>
+      <div class="kvb">
+        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for economic reasons</div><div class="kvv">4.68M</div></div><div class="kvn">Little changed; includes 3.01M on reduced hours/slack work and 1.41M who could only find part-time work.</div></div>
+        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for noneconomic reasons</div><div class="kvv">22.62M</div></div><div class="kvn">People working part-time by choice (school, family care, etc.).</div></div>
+        <div class="kvr"><div class="kvl"><div class="kvt">Multiple jobholders</div><div class="kvv">8.55M</div></div><div class="kvn">5.3% of total employed.</div></div>
+      </div>
+    </div>
+
+    <!-- Alternative measures of underutilization -->
+    <div class="sec">
+      <div class="st">Alternative Measures of Underutilization (U-1 to U-6)</div>
+      <table class="ctb">
+        <thead><tr><th>Measure</th><th>Jun '26</th><th>May '26</th></tr></thead>
+        <tbody>
+          <tr><td>U-1 (15+ weeks)</td><td>1.8%</td><td>1.8%</td></tr>
+          <tr><td>U-2 (job losers)</td><td>1.9%</td><td>2.0%</td></tr>
+          <tr><td>U-3 (official rate)</td><td>4.2%</td><td>4.3%</td></tr>
+          <tr><td>U-4 (+ discouraged)</td><td>4.5%</td><td>4.6%</td></tr>
+          <tr><td>U-5 (+ marginally attached)</td><td>5.2%</td><td>5.3%</td></tr>
+          <tr><td>U-6 (+ part-time underemployed)</td><td>7.9%</td><td>8.1%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ================= ESTABLISHMENT SURVEY ================= -->
+    <div class="svy">
+      <span class="svy-t">Establishment Survey</span>
+      <span class="svy-n">~119,000 employers · payrolls, wages & hours</span>
+    </div>
+
+    <!-- Payrolls by sector — diverging bar chart -->
+    <div class="sec">
+      <div class="st">Nonfarm Payrolls by Sector (change, thousands)</div>
+      <div class="hbar-wrap">
+        <div class="hbar-row">
+          <div class="hbar-label">Professional & business svcs.</div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill pos" style="left:50%;width:30%"></div></div>
+          <div class="hbar-val pos">+36K</div>
+        </div>
+        <div class="hbar-row">
+          <div class="hbar-label">Social assistance</div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill pos" style="left:50%;width:20%"></div></div>
+          <div class="hbar-val pos">+25K</div>
+        </div>
+        <div class="hbar-row">
+          <div class="hbar-label">Health care</div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill pos" style="left:50%;width:18%"></div></div>
+          <div class="hbar-val pos">+22K</div>
+        </div>
+        <div class="hbar-row">
+          <div class="hbar-label">Leisure & hospitality</div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill neg" style="left:0%;width:50%"></div></div>
+          <div class="hbar-val neg">-61K</div>
+        </div>
+      </div>
+      <div class="cnote">Only sectors explicitly called out in the release; all others (mining, construction, manufacturing, wholesale trade, retail trade, transportation, information, financial activities, other services, government) were little changed. Bars are scaled to this month's largest move (leisure & hospitality, -61K) and are not directly comparable in scale to other months' charts.</div>
+    </div>
+
+    <!-- Wages, hours & breadth of the expansion -->
+    <div class="sec">
+      <div class="st">Wages, Hours & Breadth of the Expansion</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">Avg. hourly earnings</div><div class="spv">$37.64</div><div class="spn">+13¢ in the month; +3.5% year-over-year.</div></div>
+        <div class="spr"><div class="spl">Avg. workweek</div><div class="spv">34.3 hrs</div><div class="spn">Unchanged; manufacturing workweek edged down to 40.3 hrs, overtime up to 3.2 hrs.</div></div>
+        <div class="spr"><div class="spl">Diffusion index (private)</div><div class="spv">54.4</div><div class="spn">Down from 56.0 in May, but still comfortably above the 50 breakeven point.</div></div>
+        <div class="spr"><div class="spl">Diffusion index (mfg.)</div><div class="spv">55.6</div><div class="spn">Up from 52.8 in May — manufacturing gains a bit more broad-based across industries.</div></div>
+      </div>
+    </div>
+
+    <!-- Revisions -->
+    <div class="sec">
+      <div class="st">Revisions to Prior Months</div>
+      <ul class="rl">
+        <li class="ri"><span class="rt rm"></span>April 2026 revised from +179K to +148K (-31K).</li>
+        <li class="ri"><span class="rt rh"></span>May 2026 revised from +172K to +129K (-43K).</li>
+        <li class="ri"><span class="rt rm"></span>Combined: 74K fewer jobs than originally reported for April-May.</li>
+      </ul>
+    </div>
+
+    <!-- Source link -->
+    <a class="pdfbtn" href="https://www.bls.gov/news.release/empsit.htm" target="_blank"><span class="picon">📄</span> View full release on BLS.gov</a>
+  </div>
+
+  <!-- ====================== CHARTS PANEL ======================
+       Each chart: a .cs with .ct (title), a .cw wrapper with a
+       unique id (wN) wrapping the <canvas id="cN">, and optional
+       .cl legend / .cnote note. rLine() and rBars() are called in
+       buildCharts() below. -->
+  <div class="mp" id="panel-charts">
+    <div class="cs">
+      <div class="ct">Unemployment Rate (%, seasonally adjusted)</div>
+      <div class="cw" id="w0"><canvas id="c0"></canvas></div>
+      <div class="cl">
+        <span class="li"><span class="ll" style="background:#5D7082"></span>Unemployment rate</span>
+      </div>
+      <div class="cnote">No data available for Oct 2025 due to the federal government shutdown. Source: BLS, Table A-1.</div>
+    </div>
+
+    <div class="cs">
+      <div class="ct">Monthly Change in Nonfarm Payrolls (thousands, seasonally adjusted)</div>
+      <div class="cw" id="w1"><canvas id="c1"></canvas></div>
+      <div class="cnote">May and June 2026 figures already reflect revisions. Source: BLS, Table B-1 / Summary Table B.</div>
+    </div>
+  </div>
+
+  <!-- ====================== MATRIX PANEL (example) ======================
+       TOPIC x PERIOD table with clickable badges. Replace TOPICS,
+       MONTHS and DATA in the JS with your real data; renderMatrix()
+       and the modals are generic and don't need to be touched. -->
+  <div class="mp" id="panel-matrix">
+    <div class="bb-wrap" id="matrixWrap"></div>
+    <div class="cnote">Click a column header to open the full text for that period. Click a badge to see the detail for that indicator that month.</div>
+  </div>
+
+  <!-- ====================== MODALES (compartidos por el módulo Matriz) ====================== -->
+  <div class="md-overlay" id="mdCellOverlay" onclick="closeMdCell(event)">
+    <div class="md-box">
+      <div class="md-head">
+        <div class="md-meta">
+          <span class="md-period" id="mdCellPeriod"></span>
+          <span class="md-topic" id="mdCellTopic"></span>
+        </div>
+        <button class="md-close" onclick="document.getElementById('mdCellOverlay').classList.remove('active')">✕</button>
+      </div>
+      <div class="md-body"><ul class="md-bullets" id="mdCellBullets"></ul></div>
+    </div>
+  </div>
+  <div class="md-overlay" id="mdFullOverlay" onclick="closeMdFull(event)">
+    <div class="md-box">
+      <div class="md-head">
+        <div class="md-meta"><span class="md-topic" id="mdFullPeriod"></span></div>
+        <button class="md-close" onclick="document.getElementById('mdFullOverlay').classList.remove('active')">✕</button>
+      </div>
+      <div class="md-body" id="mdFullBody"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+/* ============================================================
+   JS BASE — navegación de tabs, tooltip y motor de gráficos.
+   Todo genérico: no depende de los nombres de tus datos.
+   ============================================================ */
+
+/* ---- Tooltip flotante para los gráficos ---- */
+const tip=document.getElementById('tooltip');
+function showT(e,h){
+  tip.innerHTML=h;tip.style.display='block';
+  const tw=tip.offsetWidth||180,vw=window.innerWidth,x=e.clientX;
+  if(x+tw+20>vw)tip.style.left=(x-tw-8)+'px';
+  else tip.style.left=(x+14)+'px';
+  tip.style.top=(e.clientY-28)+'px';
+}
+function hideT(){tip.style.display='none';}
+
+/* ---- Dropdown "Older" (opcional) ---- */
+function toggleOlder(e){
+  e.stopPropagation();
+  document.getElementById('olderMenu').classList.toggle('open');
+}
+document.addEventListener('click',()=>{
+  const m=document.getElementById('olderMenu');
+  if(m)m.classList.remove('open');
+});
+
+/* ---- Cambio de tab / panel ----
+   id: sufijo del panel (panel-<id>)
+   btn: el botón clickeado (para marcarlo activo)
+   source: 'older' si viene del dropdown de Older */
+function sp(id,btn,source){
+  document.querySelectorAll('.mp').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tb,.tbg').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.older-item').forEach(t=>t.classList.remove('active'));
+  const olderBtn=document.getElementById('olderBtn');
+  document.getElementById('panel-'+id).classList.add('active');
+  if(source==='older'){
+    btn.classList.add('active');
+    if(olderBtn)olderBtn.classList.add('has-active');
+    const om=document.getElementById('olderMenu');
+    if(om)om.classList.remove('open');
+  } else {
+    btn.classList.add('active');
+    if(olderBtn)olderBtn.classList.remove('has-active');
+  }
+  if(id==='charts')setTimeout(buildCharts,60); // los canvas necesitan medir su wrapper ya visible
+}
+
+/* ============================================================
+   MOTOR DE GRÁFICOS (canvas, sin librerías externas)
+   ============================================================ */
+const BLU='#5D7082',GRN='#7BC143',CRL='#E07F5C',GR4='#E6E6E6';
+const F="'Aller',sans-serif";
+
+/* Calcula eje Y automático con "lindos" saltos (0.5/1/2/2.5/5/10 * 10^n) */
+function autoAx(data){
+  const mn=Math.min(...data),mx=Math.max(...data),range=mx-mn||1;
+  let lo=mn>=0?0:mn-range*0.08,hi=mx+range*0.08;
+  const raw=(hi-lo)/5,mag=Math.pow(10,Math.floor(Math.log10(raw)));
+  const step=[0.5,1,2,2.5,5,10].map(f=>f*mag).find(s=>s>=raw)||1;
+  lo=Math.floor(lo/step)*step;hi=Math.ceil(hi/step)*step;
+  if(mn>=0&&lo>0)lo=0;
+  const tks=[];for(let v=lo;v<=hi+1e-9;v=+(v+step).toFixed(10))tks.push(+v.toFixed(6));
+  return{lo,hi,tks};
+}
+
+/* Gráfico de líneas genérico.
+   cid/wid   : id del canvas / id del wrapper que define el ancho
+   datasets  : [{d:[...valores], c:'#color', w:grosor, lbl:'Nombre'}]
+   tv/tl     : valor y label de una línea de referencia horizontal punteada (o null)
+   lbl       : array de labels completos para eje X (uno por punto)
+   xi        : índices del array `lbl` que se muestran como ticks en el eje X
+   fixedMax  : fuerza el máximo del eje Y (o null para automático) */
+function rLine(cid,wid,datasets,tv,tl,lbl,xi,fixedMax,suf){
+  suf=(suf!==undefined)?suf:'%';
+  const cv=document.getElementById(cid),wr=document.getElementById(wid);
+  if(!cv||!wr)return;
+  const DPR=window.devicePixelRatio||1,W=wr.offsetWidth,H=195;
+  cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');ctx.scale(DPR,DPR);
+  const PL=30,PR=8,PT=8,PB=42,cW=W-PL-PR,cH=H-PT-PB,n=datasets[0].d.length;
+  let ax;
+  if(fixedMax!=null){const s=5;const t=[];for(let v=0;v<=fixedMax;v+=s)t.push(v);ax={lo:0,hi:fixedMax,tks:t};}
+  else{ax=autoAx(datasets.flatMap(d=>d.d));}
+  const yr=ax.hi-ax.lo,xp=i=>PL+(i/(n-1))*cW,yp=v=>PT+cH-((v-ax.lo)/yr)*cH;
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  ax.tks.forEach(v=>{const y=yp(v),iz=Math.abs(v)<1e-4;ctx.strokeStyle=iz?'rgba(0,0,0,0.15)':GR4;ctx.lineWidth=iz?1:0.5;ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+cW,y);ctx.stroke();ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';ctx.fillText(v%1===0?v.toFixed(0):v.toFixed(1),PL-3,y+3);});
+  if(tv!=null){const yt=yp(tv);ctx.strokeStyle=CRL;ctx.lineWidth=1.2;ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(PL,yt);ctx.lineTo(PL+cW,yt);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=CRL;ctx.font='bold 9px '+F;ctx.textAlign='right';ctx.fillText(tl,PL+cW-2,yt-4);}
+  ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';
+  xi.forEach((idx,k)=>{if(idx>=n)return;ctx.save();ctx.translate(xp(idx),H-PB+16);ctx.rotate(-Math.PI/6);ctx.fillText(lbl[idx]?lbl[idx].split(' ').pop():'',0,0);ctx.restore();});
+  datasets.forEach(ds=>{ctx.strokeStyle=ds.c;ctx.lineWidth=ds.w||2;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();ds.d.forEach((v,i)=>i===0?ctx.moveTo(xp(i),yp(v)):ctx.lineTo(xp(i),yp(v)));ctx.stroke();ctx.fillStyle=ds.c;ctx.beginPath();ctx.arc(xp(n-1),yp(ds.d[n-1]),3,0,Math.PI*2);ctx.fill();});
+  cv.onmousemove=e=>{
+    const r=cv.getBoundingClientRect(),mx=e.clientX-r.left;
+    if(mx<PL||mx>PL+cW){hideT();return;}
+    let ci=0,md=Infinity;
+    for(let i=0;i<n;i++){const d=Math.abs(xp(i)-mx);if(d<md){md=d;ci=i;}}
+    const lines=datasets.map(ds=>'<span style="color:'+ds.c+'">&#9679;</span> '+ds.lbl+': <b>'+ds.d[ci].toFixed(2)+suf+'</b>').join('<br>');
+    showT(e,'<span style="opacity:.65">'+(lbl[ci]||'')+'</span><br>'+lines);
+  };
+  cv.onmouseleave=hideT;
+}
+
+/* Gráfico de barras genérico (centradas en 0, con clip visual).
+   data      : array de valores
+   clip      : valor absoluto máximo mostrado (barras más grandes se recortan y anotan)
+   lbl_title : nombre de la serie (para el tooltip)
+   xLabels   : array de labels completos (uno por barra)
+   xi        : índices de `xLabels` a mostrar como ticks */
+function rBars(cid,wid,data,clip,lbl_title,xLabels,xi,suf){
+  suf=(suf!==undefined)?suf:'%';
+  const cv=document.getElementById(cid),wr=document.getElementById(wid);
+  if(!cv||!wr)return;
+  const DPR=window.devicePixelRatio||1,W=wr.offsetWidth,H=195;
+  cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');ctx.scale(DPR,DPR);
+  const PL=30,PR=8,PT=8,PB=42,cW=W-PL-PR,cH=H-PT-PB,n=data.length;
+  const yMin=-clip,yMax=clip,yr=yMax-yMin,bW=(cW/n)*0.7;
+  const xp=i=>PL+(i/n)*cW+(cW/n)*0.15,yp=v=>PT+cH-((v-yMin)/yr)*cH,y0=yp(0);
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  for(let v=-clip;v<=clip;v+=Math.max(1,Math.round(clip/4))){const y=yp(v),iz=v===0;ctx.strokeStyle=iz?'rgba(0,0,0,0.15)':GR4;ctx.lineWidth=iz?1:0.5;ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+cW,y);ctx.stroke();ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';ctx.fillText(v,PL-3,y+3);}
+  data.forEach((v,i)=>{
+    const cl=Math.max(-clip,Math.min(clip,v)),ip=v>=0,bH=Math.abs(yp(cl)-y0),bY=ip?y0-bH:y0;
+    ctx.fillStyle=ip?GRN:CRL;ctx.fillRect(xp(i),bY,bW,bH);
+    if(Math.abs(v)>clip){ctx.fillStyle=ip?GRN:CRL;ctx.font='bold 8px '+F;ctx.textAlign='center';ctx.fillText((v>0?'+':'')+v.toFixed(1)+suf,xp(i)+bW/2,ip?bY-3:bY+bH+9);}
+  });
+  ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';
+  if(xi&&xLabels)xi.forEach(idx=>{if(idx>=n)return;ctx.save();ctx.translate(xp(idx)+bW/2,H-PB+16);ctx.rotate(-Math.PI/6);ctx.fillText(xLabels[idx],0,0);ctx.restore();});
+  cv.onmousemove=e=>{
+    const r=cv.getBoundingClientRect(),mx=e.clientX-r.left;
+    if(mx<PL||mx>PL+cW){hideT();return;}
+    let ci=0,md=Infinity;
+    for(let i=0;i<n;i++){const cx=xp(i)+bW/2,d=Math.abs(cx-mx);if(d<md){md=d;ci=i;}}
+    const v=data[ci];
+    showT(e,'<span style="opacity:.65">'+(xLabels?xLabels[ci]:'')+'</span><br><span style="color:'+(v>=0?GRN:CRL)+'">&#9679;</span> '+lbl_title+': <b>'+(v>0?'+':'')+v.toFixed(1)+suf+'</b>'+(Math.abs(v)>clip?' <span style="opacity:.6">(recortado)</span>':''));
+  };
+  cv.onmouseleave=hideT;
+}
+
+/* ---- CHART DATA ----
+   Replace this with your real series. `built` prevents redrawing
+   once the charts have already been built. */
+let built=false;
+/* Seasonally adjusted unemployment rate (Table A-1). No data for
+   Oct 2025 due to the federal government shutdown, hence the Jul25→Mar26 gap. */
+const UR_LBL=['Jul 2025','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026'];
+const UR_DATA=[4.3,4.3,4.3,4.3,4.2,4.1];
+/* Monthly change in nonfarm payrolls, thousands (Summary Table B / Table B-1),
+   already reflecting revisions. */
+const NFP_LBL=['Jul 2025','May 2026','Jun 2026','Jul 2026'];
+const NFP_DATA=[64,63,20,-23];
+
+function buildCharts(){
+  if(built)return;built=true;
+  rLine('c0','w0',
+    [{d:UR_DATA,c:BLU,w:2,lbl:'Unemployment rate'}],
+    null,null,UR_LBL,[0,1,2,3,4,5],null
+  );
+  rBars('c1','w1',NFP_DATA,80,'Payroll change',NFP_LBL,[0,1,2,3],'K');
+}
+
+/* ============================================================
+   MATRIX MODULE — data and render.
+   TOPICS: rows. MONTHS: columns (display order, normally most
+   recent first). DATA[period][topicId] =
+   {status:'pos'|'neg'|'flat'|'hot', tag:'Short label', bullets:[...]}
+   fullText (optional, per period) = HTML shown in the "full text"
+   modal when clicking that column's header. */
+const MTOPICS=[
+  {id:'payrolls',name:'Nonfarm Payrolls'},
+  {id:'unemployment',name:'Unemployment Rate'},
+  {id:'participation',name:'Labor Force Participation'},
+  {id:'wages',name:'Wages (AHE)'},
+  {id:'public',name:'Public Sector'},
+];
+/* Add a new month to the start of the array (most recent first) each
+   time a new BLS release comes out, with its matching block in MDATA. */
+const MMONTHS=['jul26','jun26'];
+const MDATA={
+  jul26:{
+    label:'Jul \'26',
+    fullText:'<p>Both nonfarm payrolls (-23,000) and the unemployment rate (4.1%) changed little in July. Employment fell in local government education and retail trade, while health care kept trending up.</p><p>May and June were revised down by a combined 103,000. Average hourly earnings rose to $37.62 (+3.2% year-over-year), with no signs of wage acceleration.</p><p>The preliminary annual benchmark revision will be released on August 28, 2026, and the next report (August 2026) comes out on September 4, 2026.</p>',
+    payrolls:{status:'neg',tag:'-23K (weak)',bullets:['Fell 23,000, vs. a +34,000/month average over the past 12 months.','May and June were revised down by a combined <b>-103,000</b>.','Losses in local government education (-50K) and retail trade (-19K); health care kept rising (+22K) but more slowly.']},
+    unemployment:{status:'pos',tag:'4.1% (-0.1pp)',bullets:['Fell from 4.2% to 4.1%, driven by declines among teenagers (12.1%) and Hispanics (4.6%).','The number of unemployed people fell to 6.9 million (-178K).','Temporary layoffs rose 153,000, to 921,000 — a signal worth watching.']},
+    participation:{status:'neg',tag:'61.4% (-0.1pp)',bullets:['Both participation (61.4%) and the employment-population ratio (58.9%) changed little in the month.','Since January, participation has declined by a cumulative 0.7pp.']},
+    wages:{status:'flat',tag:'+3.2% y/y',bullets:['Average hourly earnings: $37.62 (+2 cents on the month).','No meaningful wage acceleration; the workweek held at 34.3 hours.']},
+    public:{status:'neg',tag:'-53K',bullets:['Total public employment fell 53,000, dragged down by local government education (-50K).','Federal and state government showed little net change in the month.']},
+  },
+  jun26:{
+    label:'Jun \'26',
+    fullText:'<p>Both total nonfarm payroll employment (+57,000) and the unemployment rate (4.2 percent) changed little in June. Employment continued to trend up in professional and business services, social assistance, and health care; leisure and hospitality lost jobs.</p><p>April and May were revised down by a combined 74,000. Average hourly earnings rose 13 cents to $37.64 (+3.5% year-over-year), with no clear sign of acceleration.</p><p>As originally reported; May and June were later revised down by a combined 103,000 in the July release (see Jul \'26 column).</p>',
+    payrolls:{status:'pos',tag:'+57K (in line)',bullets:['Rose 57,000, roughly in line with the +36,000/month average over the prior 12 months.','Professional and business services (+36K) and social assistance (+25K) led gains; leisure and hospitality fell 61,000.','April and May were revised down by a combined <b>-74,000</b> (later revised further in the July release).']},
+    unemployment:{status:'pos',tag:'4.2% (-0.1pp)',bullets:['Eased from 4.3% in May to 4.2%; the number of unemployed changed little at 7.1 million.','Long-term unemployed (27+ weeks) held at 1.9 million, 27.3% of all unemployed.','Rates little changed across major groups: adult men 3.9%, adult women 3.7%, teens 14.6%, Black 6.6%, Hispanic 5.2%.']},
+    participation:{status:'neg',tag:'61.5% (-0.3pp)',bullets:['Participation fell 0.3pp to 61.5%; employment-population ratio edged down 0.2pp to 59.0%.','Both measures changed little over the year after population control adjustments.']},
+    wages:{status:'flat',tag:'+3.5% y/y',bullets:['Average hourly earnings rose 13 cents (+0.3%) to $37.64; +3.5% year-over-year.','Average workweek unchanged at 34.3 hours; manufacturing workweek edged down to 40.3 hours.']},
+    public:{status:'flat',tag:'+8K',bullets:['Total government employment rose 8,000, little changed.','State government education and local government showed little net change in the month.']},
+  },
+};
+
+function renderMatrix(){
+  const wrap=document.getElementById('matrixWrap');
+  if(!wrap||wrap.dataset.built)return; // evita re-renderizar
+  wrap.dataset.built='1';
+  if(MMONTHS.length===0){
+    wrap.innerHTML='<div class="bb-empty-state"><div class="bb-es-icon">📄</div><div class="bb-es-title">No data yet</div></div>';
+    return;
+  }
+  let html='<table class="bb-table"><thead><tr><th class="bb-topic-h">Tema</th>';
+  MMONTHS.forEach((m,i)=>{
+    html+=`<th class="bb-month-h${i===0?' bb-latest':''}" onclick="openMdFull('${m}')" title="Click para ver texto completo">${MDATA[m].label}</th>`;
+  });
+  html+='</tr></thead><tbody>';
+  MTOPICS.forEach(topic=>{
+    html+='<tr>';
+    html+=`<td class="bb-topic-cell"><span class="bb-topic-name">${topic.name}</span></td>`;
+    MMONTHS.forEach(m=>{
+      const cell=MDATA[m][topic.id];
+      if(!cell){html+='<td class="bb-data-cell"><span class="bb-empty-cell"></span></td>';}
+      else{html+=`<td class="bb-data-cell"><span class="bb-badge ${cell.status}" onclick="openMdCell('${m}','${topic.id}')">${escH(cell.tag)}</span></td>`;}
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  wrap.innerHTML=html;
+}
+function openMdCell(m,topicId){
+  const month=MDATA[m],cell=month[topicId],topic=MTOPICS.find(t=>t.id===topicId);
+  document.getElementById('mdCellPeriod').textContent=month.label;
+  document.getElementById('mdCellTopic').textContent=topic.name;
+  document.getElementById('mdCellBullets').innerHTML=cell.bullets.map(b=>'<li>'+b+'</li>').join('');
+  document.getElementById('mdCellOverlay').classList.add('active');
+}
+function closeMdCell(e){if(e.target===document.getElementById('mdCellOverlay'))e.target.classList.remove('active');}
+function openMdFull(m){
+  const month=MDATA[m];
+  document.getElementById('mdFullPeriod').textContent=month.label;
+  document.getElementById('mdFullBody').innerHTML=month.fullText||'<p>Texto completo no disponible.</p>';
+  document.getElementById('mdFullOverlay').classList.add('active');
+}
+function closeMdFull(e){if(e.target===document.getElementById('mdFullOverlay'))e.target.classList.remove('active');}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    const a=document.getElementById('mdCellOverlay'),b=document.getElementById('mdFullOverlay');
+    if(a)a.classList.remove('active');if(b)b.classList.remove('active');
+  }
+});
+
+/* Renderizar la matriz al cargar (es una tabla simple, no necesita
+   esperar a que el tab esté visible como los charts) */
+renderMatrix();
+</script>
+</body>
+</html>
