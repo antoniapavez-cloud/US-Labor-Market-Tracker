@@ -322,8 +322,7 @@ details[open] summary.sh::after{transform:rotate(180deg)}
 .bb-table{border-collapse:collapse;width:auto}
 .bb-table thead th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#000;padding:0 8px 10px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--gr4);background:#fff}
 .bb-table thead th.bb-topic-h{text-align:left;padding-left:0;min-width:170px;position:sticky;left:0;z-index:3;background:#fff}
-.bb-table thead th.bb-month-h{width:150px;min-width:150px;cursor:pointer}
-.bb-table thead th.bb-month-h:hover{color:var(--g);text-decoration:underline;text-underline-offset:3px}
+.bb-table thead th.bb-month-h{width:150px;min-width:150px}
 .bb-table thead th.bb-latest{color:var(--g)}
 .bb-table tbody tr{border-bottom:1px solid var(--gr4)}
 .bb-table tbody tr:hover{background:var(--cb)}
@@ -435,7 +434,7 @@ details[open] summary.sh::after{transform:rotate(180deg)}
   <!-- ====================== HEADER ====================== -->
   <div class="wh">
     <h2>U.S. Labor Market Tracker</h2>
-    <span class="pub-badge">BLS · Employment Situation</span>
+    <span class="pub-badge">Información pública</span>
   </div>
 
   <!-- ====================== TABS ======================
@@ -758,7 +757,7 @@ details[open] summary.sh::after{transform:rotate(180deg)}
        and the modals are generic and don't need to be touched. -->
   <div class="mp" id="panel-matrix">
     <div class="bb-wrap" id="matrixWrap"></div>
-    <div class="cnote">Click a column header to open the full text for that period. Click a badge to see the detail for that indicator that month.</div>
+    <div class="cnote">Click a badge to see the detail for that indicator that month.</div>
   </div>
 
   <!-- ====================== MODALES (compartidos por el módulo Matriz) ====================== -->
@@ -996,7 +995,7 @@ function renderMatrix(){
   }
   let html='<table class="bb-table"><thead><tr><th class="bb-topic-h">Tema</th>';
   MMONTHS.forEach((m,i)=>{
-    html+=`<th class="bb-month-h${i===0?' bb-latest':''}" onclick="openMdFull('${m}')" title="Click para ver texto completo">${MDATA[m].label}</th>`;
+    html+=`<th class="bb-month-h${i===0?' bb-latest':''}">${MDATA[m].label}</th>`;
   });
   html+='</tr></thead><tbody>';
   MTOPICS.forEach(topic=>{
