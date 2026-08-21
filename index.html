@@ -71,6 +71,8 @@
 
 /* ---------- HEADER ---------- */
 .wh{margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between}
+.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.hdr-meta{font-size:9px;font-weight:300;line-height:1.6;color:#BEBEBE;text-align:right;white-space:nowrap}
 .wh h2{font-size:20px;font-weight:700;color:var(--g);letter-spacing:-.01em}
 .pub-badge{font-size:10px;font-weight:700;letter-spacing:.08em;color:#1a9fcc;text-transform:uppercase;white-space:nowrap}
 
@@ -434,7 +436,11 @@ details[open] summary.sh::after{transform:rotate(180deg)}
   <!-- ====================== HEADER ====================== -->
   <div class="wh">
     <h2>U.S. Labor Market Tracker</h2>
-    <span class="pub-badge">Información pública</span>
+    <div class="hdr-right">
+      <span class="pub-badge">Información pública</span>
+      <span class="hdr-meta">Periodicidad: Mensual</span>
+      <span class="hdr-meta">Última actualización: 07 Agosto 2026</span>
+    </div>
   </div>
 
   <!-- ====================== TABS ======================
