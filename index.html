@@ -70,11 +70,12 @@
 .w{font-family:'Aller',sans-serif;font-weight:300;padding:1.5rem 1rem 2rem;max-width:700px;color:#000;margin:0 auto}
 
 /* ---------- HEADER ---------- */
-.wh{margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between}
-.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
-.hdr-meta{font-size:9px;font-weight:300;line-height:1.6;color:#BEBEBE;text-align:right;white-space:nowrap}
+.wh{margin-bottom:1.25rem;display:flex;align-items:flex-start;justify-content:space-between}
+.wh h2{line-height:1;font-size:20px;font-weight:700}
+.wh-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.wh-tag{font-size:10px;font-weight:700;letter-spacing:.08em;color:#1A9FCC;text-transform:uppercase;line-height:1}
+.wh-sub{font-size:10px;font-weight:300;color:#969696;line-height:1.3;white-space:nowrap}
 .wh h2{font-size:20px;font-weight:700;color:var(--g);letter-spacing:-.01em}
-.pub-badge{font-size:10px;font-weight:700;letter-spacing:.08em;color:#1a9fcc;text-transform:uppercase;white-space:nowrap}
 
 /* ---------- TABS ----------
    .tb   = tab simple (períodos/cortes principales)
@@ -83,7 +84,7 @@
    .older-wrap = dropdown de "Older" cuando hay demasiados tabs
    Si tu herramienta no necesita tabs, borrá todo este bloque
    y el <div class="tabs">...</div> del HTML. */
-.tabs{display:flex;gap:5px;margin-bottom:1.25rem;padding-bottom:1.1rem;border-bottom:1px solid var(--gr4);flex-wrap:wrap;align-items:center}
+.mfo-tabs{display:flex;gap:5px;margin:0 0 1.25rem;padding-bottom:1.1rem;border-bottom:1px solid var(--gr4);flex-wrap:wrap;align-items:center}
 .tb,.tbg{padding:6px 14px;font-size:12px;border-radius:4px;cursor:pointer;transition:all .15s;border:none}
 .tb{font-weight:300;border:1px solid var(--gr3)!important;background:transparent;color:#000}
 .tb:hover{background:var(--gr4)}
@@ -109,7 +110,7 @@
    .tr + .mc.ffr + .mgrp -> KPI destacado a la izquierda (ffr) +
                             grupo de mini-KPIs a la derecha */
 .strip{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
-.mc-sm{background:var(--cb);border-radius:6px;padding:9px 11px;border:1px solid #d4d4d4;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.mc-sm{background:var(--cb);border-radius:6px;padding:10px;border:1px solid #d4d4d4;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .mc-sm .ml{font-size:9px;color:var(--sl);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:300}
 .mc-sm .mv{font-size:17px;font-weight:700;color:#000;line-height:1}
 .mc-sm .ms{font-size:10.5px;color:var(--sl);margin-top:4px;font-weight:300;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -128,7 +129,7 @@
 /* ---------- RESUMEN EJECUTIVO ----------
    Caja destacada arriba de las secciones, para el TL;DR
    de todo el panel (3-5 bullets con lo más importante). */
-.exec{background:#EAF0F5;border:1px solid #C7D3DC;border-radius:8px;padding:13px 16px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.exec{background:#EAF0F5;border:1px solid #C7D3DC;border-radius:8px;padding:13px 16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .exec-t{font-size:10.5px;font-weight:700;color:#34495E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px}
 .exec ul{list-style:none;display:flex;flex-direction:column;gap:10px}
 .exec li{position:relative;padding-left:14px;font-size:11.5px;line-height:1.5;color:#24313d;font-weight:300}
@@ -138,14 +139,14 @@
 /* ---------- SECCIÓN FIJA (.sec) ----------
    Tarjeta de sección siempre visible, con título. Usar para
    contenido que el usuario debería ver sin tener que hacer clic. */
-.sec{background:#fff;border:1px solid var(--gr4);border-radius:6px;padding:13px 15px;margin-bottom:8px}
+.sec{background:#fff;border:1px solid var(--gr4);border-radius:6px;padding:13px 15px;margin-bottom:16px}
 .st{font-size:10px;font-weight:700;color:#000;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gr4)}
 
 /* ---------- SECCIÓN COLAPSABLE (details.sec) ----------
    Alternativa a .sec cuando hay muchas secciones largas:
    colapsadas por defecto, con número, título y TL;DR visible
    incluso cerradas. Usar <details><summary>. */
-details.sec{border:1px solid var(--gr4);border-left:3px solid var(--sl);border-radius:8px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:.15s}
+details.sec{border:1px solid var(--gr4);border-left:3px solid var(--sl);border-radius:8px;margin-bottom:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:.15s}
 details.sec[open]{border-color:#d8d8d8}
 summary.sh{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:flex-start;gap:10px;background:#fff}
 summary.sh:hover{background:#fafbfc}
@@ -286,7 +287,7 @@ details[open] summary.sh::after{transform:rotate(180deg)}
    Cada gráfico vive dentro de un .cs (mismo estilo que .sec) con
    un wrapper de ancho variable (id="wN") y el <canvas id="cN">.
    El JS lo redibuja al abrir el tab de charts. */
-.cs{background:#fff;border:1px solid var(--gr4);border-radius:6px;padding:13px 15px;margin-bottom:8px}
+.cs{background:#fff;border:1px solid var(--gr4);border-radius:6px;padding:13px 15px;margin-bottom:16px}
 .ct{font-size:10px;font-weight:700;color:#000;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gr4)}
 .cw{width:100%;position:relative;cursor:crosshair}
 .cw canvas{display:block}
@@ -436,10 +437,10 @@ details[open] summary.sh::after{transform:rotate(180deg)}
   <!-- ====================== HEADER ====================== -->
   <div class="wh">
     <h2>U.S. Labor Market Tracker</h2>
-    <div class="hdr-right">
-      <span class="pub-badge">Información pública</span>
-      <span class="hdr-meta">Periodicidad: Mensual</span>
-      <span class="hdr-meta">Última actualización: 07 Agosto 2026</span>
+    <div class="wh-meta">
+      <span class="wh-tag">Información pública</span>
+      <span class="wh-sub">Periodicidad: Mensual</span>
+      <span class="wh-sub">Última actualización: 07 Agosto 2026</span>
     </div>
   </div>
 
@@ -458,10 +459,10 @@ details[open] summary.sh::after{transform:rotate(180deg)}
          C = Charts (gráficos de línea/barras en canvas)
          D = Matriz tema x período con badges + modales
          E = Acordeón multi-fuente + tabla comparativa -->
-  <div class="tabs" id="tabs">
+  <div class="mfo-tabs" id="tabs">
     <button class="tb active" onclick="sp('jul26',this)">Jul '26</button>
     <button class="tb" onclick="sp('jun26',this)">Jun '26</button>
-    <button class="tbg" onclick="sp('charts',this)">Charts</button>
+    <button class="tbg" style="margin-left:auto" onclick="sp('charts',this)">Charts</button>
     <button class="tbg" onclick="sp('matrix',this)">Evolution</button>
   </div>
 
