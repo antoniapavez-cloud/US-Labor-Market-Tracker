@@ -92,6 +92,7 @@
 .tbg{font-weight:300;border:1px solid var(--g2)!important;background:transparent;color:var(--sl)}
 .tbg:hover{background:var(--g4)}
 .tbg.active{background:var(--g);border-color:var(--g)!important;color:#fff;font-weight:700}
+.tbg-first{margin-left:auto}
 .older-wrap{position:relative;display:inline-block}
 .older-btn{padding:6px 14px;font-size:12px;border-radius:4px;cursor:pointer;font-weight:300;border:1px solid var(--gr3)!important;background:transparent;color:#000;transition:all .15s}
 .older-btn:hover{background:var(--gr4)}
@@ -123,7 +124,7 @@
 .mc.ffr{min-width:120px;flex-shrink:0}
 .mgrp{border:1px solid #d4d4d4;border-radius:6px;padding:8px 10px 10px;flex:1}
 .mgrp-title{font-size:9px;color:var(--sl);text-transform:uppercase;letter-spacing:.06em;font-weight:300;margin-bottom:7px}
-.mgrp-inner{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.mgrp-inner{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .bh{display:inline-block;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;background:var(--sl);color:#fff}
 
 /* ---------- RESUMEN EJECUTIVO ----------
@@ -462,7 +463,7 @@ details[open] summary.sh::after{transform:rotate(180deg)}
   <div class="mfo-tabs" id="tabs">
     <button class="tb active" onclick="sp('jul26',this)">Jul '26</button>
     <button class="tb" onclick="sp('jun26',this)">Jun '26</button>
-    <button class="tbg" style="margin-left:auto" onclick="sp('charts',this)">Charts</button>
+    <button class="tbg tbg-first" onclick="sp('charts',this)">Charts</button>
     <button class="tbg" onclick="sp('matrix',this)">Evolution</button>
   </div>
 
