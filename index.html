@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>U.S. Labor Market Tracker</title>
+<title>US Labor Market Tracker</title>
 </head>
 <body style="background:#f5f5f5;min-height:100vh;display:flex;justify-content:center;padding:2rem 1rem;zoom:1.1">
 <div style="max-width:740px;width:100%;background:#fff;border-radius:10px;padding:2rem 1.5rem 2.5rem;box-shadow:0 1px 4px rgba(0,0,0,.08)">
@@ -201,7 +201,7 @@ details[open] summary.sh::after{transform:rotate(180deg)}
 /* ---------- SURVEY DIVIDER ----------
    Section header used to split content by underlying BLS survey
    (Household vs. Establishment), each with an icon + one-line note. */
-.svy{display:flex;align-items:baseline;gap:10px;margin:26px 0 4px;padding-bottom:8px;border-bottom:2px solid var(--sl)}
+.svy{display:flex;align-items:baseline;gap:10px;margin:26px 0 12px;padding-bottom:0;border-bottom:none}
 .svy-icon{font-size:15px}
 .svy-t{font-size:14px;font-weight:700;color:var(--g);letter-spacing:-.01em}
 .svy-n{font-size:10.5px;color:var(--sl);font-weight:300;margin-left:auto;text-align:right}
@@ -210,6 +210,7 @@ details[open] summary.sh::after{transform:rotate(180deg)}
    Sector payroll contributions: a zero-centered track per row,
    bar extends left (negative/red) or right (positive/green). */
 .hbar-wrap{display:flex;flex-direction:column;gap:11px;margin:12px 0 4px}
+.hbar-total{padding-bottom:11px;border-bottom:1px dashed var(--gr4)}
 .hbar-row{display:grid;grid-template-columns:132px 1fr 44px;gap:9px;align-items:center}
 .hbar-label{font-size:11px;color:var(--sl);text-align:right;line-height:1.25}
 .hbar-track{position:relative;height:16px;background:var(--gr4);border-radius:3px}
@@ -437,11 +438,12 @@ details[open] summary.sh::after{transform:rotate(180deg)}
 
   <!-- ====================== HEADER ====================== -->
   <div class="wh">
-    <h2>U.S. Labor Market Tracker</h2>
+    <h2>US Labor Market Tracker</h2>
     <div class="wh-meta">
       <span class="wh-tag">Información pública</span>
       <span class="wh-sub">Periodicidad: Mensual</span>
       <span class="wh-sub">Última actualización: 07 Agosto 2026</span>
+      <span class="wh-sub">Fuente: US BLS</span>
     </div>
   </div>
 
@@ -488,61 +490,6 @@ details[open] summary.sh::after{transform:rotate(180deg)}
       </ul>
     </div>
 
-    <!-- ================= HOUSEHOLD SURVEY ================= -->
-    <div class="svy">
-      <span class="svy-t">Household Survey</span>
-      <span class="svy-n">~60,000 households · unemployment & demographics</span>
-    </div>
-
-    <div class="sec">
-      <div class="st">Labor Force Overview</div>
-      <div class="spb">
-        <div class="spr"><div class="spl">People unemployed</div><div class="spv">6.9M<span class="ard">↓</span></div><div class="spn">Down 178K from June (7.1M).</div></div>
-        <div class="spr"><div class="spl">Labor force participation</div><div class="spv">61.4%<span class="ard">↓</span></div><div class="spn">-0.1pp from June; down 0.7pp since January.</div></div>
-        <div class="spr"><div class="spl">Employment-population ratio</div><div class="spv">58.9%<span class="ard">↓</span></div><div class="spn">-0.1pp from June; down 0.5pp since January.</div></div>
-      </div>
-    </div>
-
-    <div class="sec">
-      <div class="st">Unemployment Rate by Group</div>
-      <div class="spb">
-        <div class="spr"><div class="spl">Total (16+)</div><div class="spv">4.1%<span class="ard">↓</span></div><div class="spn">vs. 4.2% in June.</div></div>
-        <div class="spr"><div class="spl">Adult men</div><div class="spv">3.9%</div><div class="spn">Unchanged from June.</div></div>
-        <div class="spr"><div class="spl">Adult women</div><div class="spv">3.7%</div><div class="spn">Unchanged from June.</div></div>
-        <div class="spr"><div class="spl">Teenagers</div><div class="spv">12.1%<span class="ard">↓</span></div><div class="spn">Sharp drop from 14.6% in June.</div></div>
-        <div class="spr"><div class="spl">White</div><div class="spv">3.6%</div><div class="spn">Unchanged from June.</div></div>
-        <div class="spr"><div class="spl">Black</div><div class="spv">6.3%<span class="ard">↓</span></div><div class="spn">Down from 6.6% in June.</div></div>
-        <div class="spr"><div class="spl">Asian</div><div class="spv">4.0%</div><div class="spn">Unchanged from June.</div></div>
-        <div class="spr"><div class="spl">Hispanic</div><div class="spv">4.6%<span class="ard">↓</span></div><div class="spn">Down from 5.2% in June.</div></div>
-      </div>
-    </div>
-
-    <!-- Part-time and multiple jobholders -->
-    <div class="sec">
-      <div class="st">Part-Time Employment & Multiple Jobholders</div>
-      <div class="kvb">
-        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for economic reasons</div><div class="kvv">4.80M</div></div><div class="kvn">Little changed; includes 3.02M on reduced hours/slack work and 1.43M who could only find part-time work.</div></div>
-        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for noneconomic reasons</div><div class="kvv">22.77M</div></div><div class="kvn">People working part-time by choice (school, family care, etc.).</div></div>
-        <div class="kvr"><div class="kvl"><div class="kvt">Multiple jobholders</div><div class="kvv">8.69M</div></div><div class="kvn">5.4% of total employed — edged up slightly from recent months.</div></div>
-      </div>
-    </div>
-
-    <!-- Alternative measures of underutilization -->
-    <div class="sec">
-      <div class="st">Alternative Measures of Underutilization (U-1 to U-6)</div>
-      <table class="ctb">
-        <thead><tr><th>Measure</th><th>Jul '26</th><th>Jun '26</th></tr></thead>
-        <tbody>
-          <tr><td>U-1 (15+ weeks)</td><td>1.7%</td><td>1.8%</td></tr>
-          <tr><td>U-2 (job losers)</td><td>2.0%</td><td>1.9%</td></tr>
-          <tr><td>U-3 (official rate)</td><td>4.1%</td><td>4.2%</td></tr>
-          <tr><td>U-4 (+ discouraged)</td><td>4.4%</td><td>4.5%</td></tr>
-          <tr><td>U-5 (+ marginally attached)</td><td>5.1%</td><td>5.2%</td></tr>
-          <tr><td>U-6 (+ part-time underemployed)</td><td>7.9%</td><td>7.9%</td></tr>
-        </tbody>
-      </table>
-    </div>
-
     <!-- ================= ESTABLISHMENT SURVEY ================= -->
     <div class="svy">
       <span class="svy-t">Establishment Survey</span>
@@ -553,6 +500,11 @@ details[open] summary.sh::after{transform:rotate(180deg)}
     <div class="sec">
       <div class="st">Nonfarm Payrolls by Sector (change, thousands)</div>
       <div class="hbar-wrap">
+        <div class="hbar-row hbar-total">
+          <div class="hbar-label"><b>Total Nonfarm Payrolls</b></div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill neg" style="left:27%;width:23%"></div></div>
+          <div class="hbar-val neg"><b>-23K</b></div>
+        </div>
         <div class="hbar-row">
           <div class="hbar-label">Health care</div>
           <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill pos" style="left:50%;width:22%"></div></div>
@@ -598,6 +550,60 @@ details[open] summary.sh::after{transform:rotate(180deg)}
       </ul>
     </div>
 
+    <!-- ================= HOUSEHOLD SURVEY ================= -->
+    <div class="svy">
+      <span class="svy-t">Household Survey</span>
+      <span class="svy-n">~60,000 households · unemployment & demographics</span>
+    </div>
+
+    <div class="sec">
+      <div class="st">Labor Force Overview</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">People unemployed</div><div class="spv">6.9M<span class="ard">↓</span></div><div class="spn">Down 178K from June (7.1M).</div></div>
+        <div class="spr"><div class="spl">Labor force participation</div><div class="spv">61.4%<span class="ard">↓</span></div><div class="spn">-0.1pp from June; down 0.7pp since January.</div></div>
+        <div class="spr"><div class="spl">Employment-population ratio</div><div class="spv">58.9%<span class="ard">↓</span></div><div class="spn">-0.1pp from June; down 0.5pp since January.</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="st">Unemployment Rate by Group</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">Total (16+)</div><div class="spv">4.1%<span class="ard">↓</span></div><div class="spn">vs. 4.2% in June.</div></div>
+        <div class="spr"><div class="spl">Adult men</div><div class="spv">3.9%</div><div class="spn">Unchanged from June.</div></div>
+        <div class="spr"><div class="spl">Adult women</div><div class="spv">3.7%</div><div class="spn">Unchanged from June.</div></div>
+        <div class="spr"><div class="spl">Teenagers</div><div class="spv">12.1%<span class="ard">↓</span></div><div class="spn">Sharp drop from 14.6% in June.</div></div>
+        <div class="spr"><div class="spl">White</div><div class="spv">3.6%</div><div class="spn">Unchanged from June.</div></div>
+        <div class="spr"><div class="spl">Black</div><div class="spv">6.3%<span class="ard">↓</span></div><div class="spn">Down from 6.6% in June.</div></div>
+        <div class="spr"><div class="spl">Asian</div><div class="spv">4.0%</div><div class="spn">Unchanged from June.</div></div>
+        <div class="spr"><div class="spl">Hispanic</div><div class="spv">4.6%<span class="ard">↓</span></div><div class="spn">Down from 5.2% in June.</div></div>
+      </div>
+    </div>
+
+    <!-- Part-time and multiple jobholders -->
+    <div class="sec">
+      <div class="st">Part-Time Employment & Multiple Jobholders</div>
+      <div class="kvb">
+        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for economic reasons</div><div class="kvv">4.80M</div></div><div class="kvn">Little changed; includes 3.02M on reduced hours/slack work and 1.43M who could only find part-time work.</div></div>
+        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for noneconomic reasons</div><div class="kvv">22.77M</div></div><div class="kvn">People working part-time by choice (school, family care, etc.).</div></div>
+        <div class="kvr"><div class="kvl"><div class="kvt">Multiple jobholders</div><div class="kvv">8.69M</div></div><div class="kvn">5.4% of total employed — edged up slightly from recent months.</div></div>
+      </div>
+    </div>
+
+    <!-- Alternative measures of underutilization -->
+    <div class="sec">
+      <div class="st">Alternative Measures of Underutilization (U-2 to U-6)</div>
+      <table class="ctb">
+        <thead><tr><th>Measure</th><th>Jul '26</th><th>Jun '26</th></tr></thead>
+        <tbody>
+          <tr><td>U-2 (job losers)</td><td>2.0%</td><td>1.9%</td></tr>
+          <tr><td>U-3 (official rate)</td><td>4.1%</td><td>4.2%</td></tr>
+          <tr><td>U-4 (+ discouraged)</td><td>4.4%</td><td>4.5%</td></tr>
+          <tr><td>U-5 (+ marginally attached)</td><td>5.1%</td><td>5.2%</td></tr>
+          <tr><td>U-6 (+ part-time underemployed)</td><td>7.9%</td><td>7.9%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Source link -->
     <a class="pdfbtn" href="https://www.bls.gov/news.release/empsit.htm" target="_blank"><span class="picon">📄</span> View full release on BLS.gov</a>
   </div>
@@ -623,61 +629,6 @@ details[open] summary.sh::after{transform:rotate(180deg)}
       </ul>
     </div>
 
-    <!-- ================= HOUSEHOLD SURVEY ================= -->
-    <div class="svy">
-      <span class="svy-t">Household Survey</span>
-      <span class="svy-n">~60,000 households · unemployment & demographics</span>
-    </div>
-
-    <div class="sec">
-      <div class="st">Labor Force Overview</div>
-      <div class="spb">
-        <div class="spr"><div class="spl">People unemployed</div><div class="spv">7.1M<span class="ard">↓</span></div><div class="spn">Little changed from May (7.3M).</div></div>
-        <div class="spr"><div class="spl">Labor force participation</div><div class="spv">61.5%<span class="ard">↓</span></div><div class="spn">-0.3pp from May.</div></div>
-        <div class="spr"><div class="spl">Employment-population ratio</div><div class="spv">59.0%<span class="ard">↓</span></div><div class="spn">-0.2pp from May.</div></div>
-      </div>
-    </div>
-
-    <div class="sec">
-      <div class="st">Unemployment Rate by Group</div>
-      <div class="spb">
-        <div class="spr"><div class="spl">Total (16+)</div><div class="spv">4.2%<span class="ard">↓</span></div><div class="spn">vs. 4.3% in May.</div></div>
-        <div class="spr"><div class="spl">Adult men</div><div class="spv">3.9%<span class="ard">↓</span></div><div class="spn">Down from 4.0% in May.</div></div>
-        <div class="spr"><div class="spl">Adult women</div><div class="spv">3.7%<span class="ard">↓</span></div><div class="spn">Down from 3.8% in May.</div></div>
-        <div class="spr"><div class="spl">Teenagers</div><div class="spv">14.6%<span class="ard">↓</span></div><div class="spn">Down slightly from 14.7% in May.</div></div>
-        <div class="spr"><div class="spl">White</div><div class="spv">3.6%<span class="ard">↓</span></div><div class="spn">Down from 3.8% in May.</div></div>
-        <div class="spr"><div class="spl">Black</div><div class="spv">6.6%</div><div class="spn">Unchanged from May.</div></div>
-        <div class="spr"><div class="spl">Asian</div><div class="spv">3.9%<span class="aru">↑</span></div><div class="spn">Up from 3.8% in May.</div></div>
-        <div class="spr"><div class="spl">Hispanic</div><div class="spv">5.2%<span class="aru">↑</span></div><div class="spn">Up from 5.0% in May.</div></div>
-      </div>
-    </div>
-
-    <!-- Part-time and multiple jobholders -->
-    <div class="sec">
-      <div class="st">Part-Time Employment & Multiple Jobholders</div>
-      <div class="kvb">
-        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for economic reasons</div><div class="kvv">4.68M</div></div><div class="kvn">Little changed; includes 3.01M on reduced hours/slack work and 1.41M who could only find part-time work.</div></div>
-        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for noneconomic reasons</div><div class="kvv">22.62M</div></div><div class="kvn">People working part-time by choice (school, family care, etc.).</div></div>
-        <div class="kvr"><div class="kvl"><div class="kvt">Multiple jobholders</div><div class="kvv">8.55M</div></div><div class="kvn">5.3% of total employed.</div></div>
-      </div>
-    </div>
-
-    <!-- Alternative measures of underutilization -->
-    <div class="sec">
-      <div class="st">Alternative Measures of Underutilization (U-1 to U-6)</div>
-      <table class="ctb">
-        <thead><tr><th>Measure</th><th>Jun '26</th><th>May '26</th></tr></thead>
-        <tbody>
-          <tr><td>U-1 (15+ weeks)</td><td>1.8%</td><td>1.8%</td></tr>
-          <tr><td>U-2 (job losers)</td><td>1.9%</td><td>2.0%</td></tr>
-          <tr><td>U-3 (official rate)</td><td>4.2%</td><td>4.3%</td></tr>
-          <tr><td>U-4 (+ discouraged)</td><td>4.5%</td><td>4.6%</td></tr>
-          <tr><td>U-5 (+ marginally attached)</td><td>5.2%</td><td>5.3%</td></tr>
-          <tr><td>U-6 (+ part-time underemployed)</td><td>7.9%</td><td>8.1%</td></tr>
-        </tbody>
-      </table>
-    </div>
-
     <!-- ================= ESTABLISHMENT SURVEY ================= -->
     <div class="svy">
       <span class="svy-t">Establishment Survey</span>
@@ -688,6 +639,11 @@ details[open] summary.sh::after{transform:rotate(180deg)}
     <div class="sec">
       <div class="st">Nonfarm Payrolls by Sector (change, thousands)</div>
       <div class="hbar-wrap">
+        <div class="hbar-row hbar-total">
+          <div class="hbar-label"><b>Total Nonfarm Payrolls</b></div>
+          <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill pos" style="left:50%;width:47%"></div></div>
+          <div class="hbar-val pos"><b>+57K</b></div>
+        </div>
         <div class="hbar-row">
           <div class="hbar-label">Professional & business svcs.</div>
           <div class="hbar-track"><div class="hbar-mid"></div><div class="hbar-fill pos" style="left:50%;width:30%"></div></div>
@@ -733,6 +689,60 @@ details[open] summary.sh::after{transform:rotate(180deg)}
       </ul>
     </div>
 
+    <!-- ================= HOUSEHOLD SURVEY ================= -->
+    <div class="svy">
+      <span class="svy-t">Household Survey</span>
+      <span class="svy-n">~60,000 households · unemployment & demographics</span>
+    </div>
+
+    <div class="sec">
+      <div class="st">Labor Force Overview</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">People unemployed</div><div class="spv">7.1M<span class="ard">↓</span></div><div class="spn">Little changed from May (7.3M).</div></div>
+        <div class="spr"><div class="spl">Labor force participation</div><div class="spv">61.5%<span class="ard">↓</span></div><div class="spn">-0.3pp from May.</div></div>
+        <div class="spr"><div class="spl">Employment-population ratio</div><div class="spv">59.0%<span class="ard">↓</span></div><div class="spn">-0.2pp from May.</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="st">Unemployment Rate by Group</div>
+      <div class="spb">
+        <div class="spr"><div class="spl">Total (16+)</div><div class="spv">4.2%<span class="ard">↓</span></div><div class="spn">vs. 4.3% in May.</div></div>
+        <div class="spr"><div class="spl">Adult men</div><div class="spv">3.9%<span class="ard">↓</span></div><div class="spn">Down from 4.0% in May.</div></div>
+        <div class="spr"><div class="spl">Adult women</div><div class="spv">3.7%<span class="ard">↓</span></div><div class="spn">Down from 3.8% in May.</div></div>
+        <div class="spr"><div class="spl">Teenagers</div><div class="spv">14.6%<span class="ard">↓</span></div><div class="spn">Down slightly from 14.7% in May.</div></div>
+        <div class="spr"><div class="spl">White</div><div class="spv">3.6%<span class="ard">↓</span></div><div class="spn">Down from 3.8% in May.</div></div>
+        <div class="spr"><div class="spl">Black</div><div class="spv">6.6%</div><div class="spn">Unchanged from May.</div></div>
+        <div class="spr"><div class="spl">Asian</div><div class="spv">3.9%<span class="aru">↑</span></div><div class="spn">Up from 3.8% in May.</div></div>
+        <div class="spr"><div class="spl">Hispanic</div><div class="spv">5.2%<span class="aru">↑</span></div><div class="spn">Up from 5.0% in May.</div></div>
+      </div>
+    </div>
+
+    <!-- Part-time and multiple jobholders -->
+    <div class="sec">
+      <div class="st">Part-Time Employment & Multiple Jobholders</div>
+      <div class="kvb">
+        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for economic reasons</div><div class="kvv">4.68M</div></div><div class="kvn">Little changed; includes 3.01M on reduced hours/slack work and 1.41M who could only find part-time work.</div></div>
+        <div class="kvr"><div class="kvl"><div class="kvt">Part-time for noneconomic reasons</div><div class="kvv">22.62M</div></div><div class="kvn">People working part-time by choice (school, family care, etc.).</div></div>
+        <div class="kvr"><div class="kvl"><div class="kvt">Multiple jobholders</div><div class="kvv">8.55M</div></div><div class="kvn">5.3% of total employed.</div></div>
+      </div>
+    </div>
+
+    <!-- Alternative measures of underutilization -->
+    <div class="sec">
+      <div class="st">Alternative Measures of Underutilization (U-2 to U-6)</div>
+      <table class="ctb">
+        <thead><tr><th>Measure</th><th>Jun '26</th><th>May '26</th></tr></thead>
+        <tbody>
+          <tr><td>U-2 (job losers)</td><td>1.9%</td><td>2.0%</td></tr>
+          <tr><td>U-3 (official rate)</td><td>4.2%</td><td>4.3%</td></tr>
+          <tr><td>U-4 (+ discouraged)</td><td>4.5%</td><td>4.6%</td></tr>
+          <tr><td>U-5 (+ marginally attached)</td><td>5.2%</td><td>5.3%</td></tr>
+          <tr><td>U-6 (+ part-time underemployed)</td><td>7.9%</td><td>8.1%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Source link -->
     <a class="pdfbtn" href="https://www.bls.gov/news.release/empsit.htm" target="_blank"><span class="picon">📄</span> View full release on BLS.gov</a>
   </div>
@@ -755,7 +765,7 @@ details[open] summary.sh::after{transform:rotate(180deg)}
     <div class="cs">
       <div class="ct">Monthly Change in Nonfarm Payrolls (thousands, seasonally adjusted)</div>
       <div class="cw" id="w1"><canvas id="c1"></canvas></div>
-      <div class="cnote">May and June 2026 figures already reflect revisions. Source: BLS, Table B-1 / Summary Table B.</div>
+      <div class="cnote">Last 12 months. No data available for Oct 2025 due to the federal government shutdown. May and June 2026 figures already reflect revisions. Source: BLS, Table B-1 / Summary Table B.</div>
     </div>
   </div>
 
@@ -868,23 +878,24 @@ function autoAx(data){
    lbl       : array de labels completos para eje X (uno por punto)
    xi        : índices del array `lbl` que se muestran como ticks en el eje X
    fixedMax  : fuerza el máximo del eje Y (o null para automático) */
+function getZoom(){const z=parseFloat(getComputedStyle(document.body).zoom);return isNaN(z)?1:z;}
 function rLine(cid,wid,datasets,tv,tl,lbl,xi,fixedMax,suf){
   suf=(suf!==undefined)?suf:'%';
   const cv=document.getElementById(cid),wr=document.getElementById(wid);
   if(!cv||!wr)return;
-  const DPR=window.devicePixelRatio||1,W=wr.offsetWidth,H=195;
+  const DPR=Math.max((window.devicePixelRatio||1)*getZoom(),2.5),W=wr.offsetWidth,H=195;
   cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';
   const ctx=cv.getContext('2d');ctx.scale(DPR,DPR);
   const PL=30,PR=8,PT=8,PB=42,cW=W-PL-PR,cH=H-PT-PB,n=datasets[0].d.length;
   let ax;
-  if(fixedMax!=null){const s=5;const t=[];for(let v=0;v<=fixedMax;v+=s)t.push(v);ax={lo:0,hi:fixedMax,tks:t};}
+  if(fixedMax!=null){const lo=Array.isArray(fixedMax)?fixedMax[0]:0,hi=Array.isArray(fixedMax)?fixedMax[1]:fixedMax,rng=hi-lo;const s=rng<=2?0.5:(rng<=5?1:(rng<=10?2:rng/4));const t=[];for(let v=lo;v<=hi+1e-9;v+=s)t.push(v);ax={lo:lo,hi:hi,tks:t};}
   else{ax=autoAx(datasets.flatMap(d=>d.d));}
   const yr=ax.hi-ax.lo,xp=i=>PL+(i/(n-1))*cW,yp=v=>PT+cH-((v-ax.lo)/yr)*cH;
   ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-  ax.tks.forEach(v=>{const y=yp(v),iz=Math.abs(v)<1e-4;ctx.strokeStyle=iz?'rgba(0,0,0,0.15)':GR4;ctx.lineWidth=iz?1:0.5;ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+cW,y);ctx.stroke();ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';ctx.fillText(v%1===0?v.toFixed(0):v.toFixed(1),PL-3,y+3);});
+  ax.tks.forEach(v=>{const y=yp(v),iz=Math.abs(v)<1e-4;ctx.strokeStyle=iz?'rgba(0,0,0,0.15)':GR4;ctx.lineWidth=iz?1:0.5;ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+cW,y);ctx.stroke();ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';ctx.fillText(v.toFixed(1),PL-3,y+3);});
   if(tv!=null){const yt=yp(tv);ctx.strokeStyle=CRL;ctx.lineWidth=1.2;ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(PL,yt);ctx.lineTo(PL+cW,yt);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=CRL;ctx.font='bold 9px '+F;ctx.textAlign='right';ctx.fillText(tl,PL+cW-2,yt-4);}
   ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';
-  xi.forEach((idx,k)=>{if(idx>=n)return;ctx.save();ctx.translate(xp(idx),H-PB+16);ctx.rotate(-Math.PI/6);ctx.fillText(lbl[idx]?lbl[idx].split(' ').pop():'',0,0);ctx.restore();});
+  xi.forEach((idx,k)=>{if(idx>=n)return;ctx.save();ctx.translate(xp(idx),H-PB+16);ctx.rotate(-Math.PI/6);ctx.fillText(lbl[idx]?(lbl[idx].split(' ')[0]+' '+lbl[idx].split(' ')[1].slice(-2)):'',0,0);ctx.restore();});
   datasets.forEach(ds=>{ctx.strokeStyle=ds.c;ctx.lineWidth=ds.w||2;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();ds.d.forEach((v,i)=>i===0?ctx.moveTo(xp(i),yp(v)):ctx.lineTo(xp(i),yp(v)));ctx.stroke();ctx.fillStyle=ds.c;ctx.beginPath();ctx.arc(xp(n-1),yp(ds.d[n-1]),3,0,Math.PI*2);ctx.fill();});
   cv.onmousemove=e=>{
     const r=cv.getBoundingClientRect(),mx=e.clientX-r.left;
@@ -907,18 +918,19 @@ function rBars(cid,wid,data,clip,lbl_title,xLabels,xi,suf){
   suf=(suf!==undefined)?suf:'%';
   const cv=document.getElementById(cid),wr=document.getElementById(wid);
   if(!cv||!wr)return;
-  const DPR=window.devicePixelRatio||1,W=wr.offsetWidth,H=195;
+  const DPR=Math.max((window.devicePixelRatio||1)*getZoom(),2.5),W=wr.offsetWidth,H=195;
   cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';
   const ctx=cv.getContext('2d');ctx.scale(DPR,DPR);
   const PL=30,PR=8,PT=8,PB=42,cW=W-PL-PR,cH=H-PT-PB,n=data.length;
-  const yMin=-clip,yMax=clip,yr=yMax-yMin,bW=(cW/n)*0.7;
+  const yMin=Array.isArray(clip)?clip[0]:-clip,yMax=Array.isArray(clip)?clip[1]:clip,yr=yMax-yMin,bW=(cW/n)*0.7;
   const xp=i=>PL+(i/n)*cW+(cW/n)*0.15,yp=v=>PT+cH-((v-yMin)/yr)*cH,y0=yp(0);
   ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-  for(let v=-clip;v<=clip;v+=Math.max(1,Math.round(clip/4))){const y=yp(v),iz=v===0;ctx.strokeStyle=iz?'rgba(0,0,0,0.15)':GR4;ctx.lineWidth=iz?1:0.5;ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+cW,y);ctx.stroke();ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';ctx.fillText(v,PL-3,y+3);}
+  const step=Math.max(1,Math.round(yr/4));
+  for(let v=Math.ceil(yMin/step)*step;v<=yMax;v+=step){const y=yp(v),iz=v===0;ctx.strokeStyle=iz?'rgba(0,0,0,0.15)':GR4;ctx.lineWidth=iz?1:0.5;ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+cW,y);ctx.stroke();ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';ctx.fillText(v,PL-3,y+3);}
   data.forEach((v,i)=>{
-    const cl=Math.max(-clip,Math.min(clip,v)),ip=v>=0,bH=Math.abs(yp(cl)-y0),bY=ip?y0-bH:y0;
+    const cl=Math.max(yMin,Math.min(yMax,v)),ip=v>=0,bH=Math.abs(yp(cl)-y0),bY=ip?y0-bH:y0;
     ctx.fillStyle=ip?GRN:CRL;ctx.fillRect(xp(i),bY,bW,bH);
-    if(Math.abs(v)>clip){ctx.fillStyle=ip?GRN:CRL;ctx.font='bold 8px '+F;ctx.textAlign='center';ctx.fillText((v>0?'+':'')+v.toFixed(1)+suf,xp(i)+bW/2,ip?bY-3:bY+bH+9);}
+    if(v>yMax||v<yMin){ctx.fillStyle=ip?GRN:CRL;ctx.font='bold 8px '+F;ctx.textAlign='center';ctx.fillText((v>0?'+':'')+v.toFixed(1)+suf,xp(i)+bW/2,ip?bY-3:bY+bH+9);}
   });
   ctx.fillStyle='#000';ctx.font='9px '+F;ctx.textAlign='right';
   if(xi&&xLabels)xi.forEach(idx=>{if(idx>=n)return;ctx.save();ctx.translate(xp(idx)+bW/2,H-PB+16);ctx.rotate(-Math.PI/6);ctx.fillText(xLabels[idx],0,0);ctx.restore();});
@@ -928,7 +940,7 @@ function rBars(cid,wid,data,clip,lbl_title,xLabels,xi,suf){
     let ci=0,md=Infinity;
     for(let i=0;i<n;i++){const cx=xp(i)+bW/2,d=Math.abs(cx-mx);if(d<md){md=d;ci=i;}}
     const v=data[ci];
-    showT(e,'<span style="opacity:.65">'+(xLabels?xLabels[ci]:'')+'</span><br><span style="color:'+(v>=0?GRN:CRL)+'">&#9679;</span> '+lbl_title+': <b>'+(v>0?'+':'')+v.toFixed(1)+suf+'</b>'+(Math.abs(v)>clip?' <span style="opacity:.6">(recortado)</span>':''));
+    showT(e,'<span style="opacity:.65">'+(xLabels?xLabels[ci]:'')+'</span><br><span style="color:'+(v>=0?GRN:CRL)+'">&#9679;</span> '+lbl_title+': <b>'+(v>0?'+':'')+v.toFixed(1)+suf+'</b>'+((v>yMax||v<yMin)?' <span style="opacity:.6">(recortado)</span>':''));
   };
   cv.onmouseleave=hideT;
 }
@@ -943,16 +955,16 @@ const UR_LBL=['Jul 2025','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026']
 const UR_DATA=[4.3,4.3,4.3,4.3,4.2,4.1];
 /* Monthly change in nonfarm payrolls, thousands (Summary Table B / Table B-1),
    already reflecting revisions. */
-const NFP_LBL=['Jul 2025','May 2026','Jun 2026','Jul 2026'];
-const NFP_DATA=[64,63,20,-23];
+const NFP_LBL=['Aug 25','Sep 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26','May 26','Jun 26','Jul 26'];
+const NFP_DATA=[30,28,18,12,24,22,32,148,63,20,-23];
 
 function buildCharts(){
   if(built)return;built=true;
   rLine('c0','w0',
     [{d:UR_DATA,c:BLU,w:2,lbl:'Unemployment rate'}],
-    null,null,UR_LBL,[0,1,2,3,4,5],null
+    null,null,UR_LBL,[0,1,2,3,4,5],[3.5,5]
   );
-  rBars('c1','w1',NFP_DATA,80,'Payroll change',NFP_LBL,[0,1,2,3],'K');
+  rBars('c1','w1',NFP_DATA,[-30,90],'Payroll change',NFP_LBL,[0,1,2,3,4,5,6,7,8,9,10],'K');
 }
 
 /* ============================================================
@@ -1001,7 +1013,7 @@ function renderMatrix(){
     wrap.innerHTML='<div class="bb-empty-state"><div class="bb-es-icon">📄</div><div class="bb-es-title">No data yet</div></div>';
     return;
   }
-  let html='<table class="bb-table"><thead><tr><th class="bb-topic-h">Tema</th>';
+  let html='<table class="bb-table"><thead><tr><th class="bb-topic-h"></th>';
   MMONTHS.forEach((m,i)=>{
     html+=`<th class="bb-month-h${i===0?' bb-latest':''}">${MDATA[m].label}</th>`;
   });
