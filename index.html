@@ -311,6 +311,21 @@ details[open] summary.sh::after{transform:rotate(180deg)}
 .pdfbtn .picon{font-size:16px}
 .pdfbtn:hover{background:var(--gr4);border-color:var(--sl)}
 
+/* ---- Botón + modal: Manual de actualización ---- */
+.btn-manual{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;font-size:12px;font-weight:300;font-family:'Aller',sans-serif;border:1px solid var(--gr3);border-radius:5px;background:transparent;color:var(--sl);cursor:pointer;transition:all .15s}
+.btn-manual:hover{background:var(--gr4);color:#000}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:10px;max-width:680px;width:90%;padding:28px 28px 24px;box-shadow:0 8px 32px rgba(0,0,0,.18);position:relative}
+.modal-close{position:absolute;top:14px;right:16px;font-size:18px;background:none;border:none;cursor:pointer;color:var(--sl);line-height:1}
+.modal-title{font-size:14px;font-weight:700;color:var(--g);margin-bottom:4px}
+.modal-sub{font-size:11px;color:var(--sl);font-weight:300;margin-bottom:18px}
+.modal-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.modal-step-body{font-size:12px;font-weight:300;color:#000;line-height:1.5}
+.modal-step-body b{font-weight:700}
+.modal-divider{border:none;border-top:1px solid var(--gr4);margin:16px 0}
+.modal-note{font-size:11px;color:var(--sl);font-weight:300;line-height:1.5;font-style:italic}
+
 /* ============================================================
    MÓDULO: TABLA MATRIZ / HEATMAP (estilo "Beige Book Tracker")
    ============================================================
@@ -443,7 +458,7 @@ details[open] summary.sh::after{transform:rotate(180deg)}
       <span class="wh-tag">Información pública</span>
       <span class="wh-sub">Periodicidad: Mensual</span>
       <span class="wh-sub">Última actualización: 07 Agosto 2026</span>
-      <span class="wh-sub">Fuente: US BLS</span>
+      <span class="wh-sub">Fuente: <a href="https://www.bls.gov/news.release/empsit.htm" target="_blank" style="color:inherit;text-decoration:none!important">bls.gov/news.release/empsit.htm</a></span>
     </div>
   </div>
 
@@ -606,6 +621,13 @@ details[open] summary.sh::after{transform:rotate(180deg)}
 
     <!-- Source link -->
     <a class="pdfbtn" href="https://www.bls.gov/news.release/empsit.htm" target="_blank"><span class="picon">📄</span> View full release on BLS.gov</a>
+
+    <!-- Manual de actualización -->
+    <div style="text-align:right;padding:16px 0 4px">
+      <button class="btn-manual" onclick="document.getElementById('updateModal').classList.add('open')">
+        Manual de actualización
+      </button>
+    </div>
   </div>
 
   <!-- ====================== PANEL — JUNE 2026 ====================== -->
@@ -1058,5 +1080,31 @@ document.addEventListener('keydown',e=>{
    esperar a que el tab esté visible como los charts) */
 renderMatrix();
 </script>
+<div class="modal-overlay" id="updateModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('updateModal').classList.remove('open')">✕</button>
+    <div class="modal-title">Manual de actualización</div>
+    <div class="modal-sub">Qué hacer cada mes cuando sale el nuevo reporte de BLS.</div>
+    <div class="modal-step">
+      <div style="font-size:12px;font-weight:700;color:#000;min-width:20px;flex-shrink:0;margin-top:1px">1.</div>
+      <div class="modal-step-body"><b>Descargar el reporte.</b> Entrar a <a href="https://www.bls.gov/news.release/empsit.htm" target="_blank" style="color:var(--g);font-weight:700;text-decoration:none">bls.gov/news.release/empsit.htm</a> (se publica el primer viernes de cada mes) y descargar el PDF del Employment Situation.</div>
+    </div>
+    <div class="modal-step">
+      <div style="font-size:12px;font-weight:700;color:#000;min-width:20px;flex-shrink:0;margin-top:1px">2.</div>
+      <div class="modal-step-body"><b>Guardar el PDF.</b> Archivarlo en:<br><code style="color:#000;font-weight:700">W:\4. Informes\-- Informes Mensuales\US Labor Market</code></div>
+    </div>
+    <div class="modal-step">
+      <div style="font-size:12px;font-weight:700;color:#000;min-width:20px;flex-shrink:0;margin-top:1px">3.</div>
+      <div class="modal-step-body"><b>Adjuntar el reporte acá.</b> Subir el PDF a este proyecto de Claude para que se genere el nuevo panel del mes.</div>
+    </div>
+    <div class="modal-step">
+      <div style="font-size:12px;font-weight:700;color:#000;min-width:20px;flex-shrink:0;margin-top:1px">4.</div>
+      <div class="modal-step-body"><b>Descargar y guardar el HTML actualizado.</b> Una vez que Claude entregue el archivo, guardarlo en:<br><code style="color:#000;font-weight:700">G:\Unidades compartidas\MFO-Dashboards\Monitores\Estrategia</code></div>
+    </div>
+    <hr class="modal-divider">
+    <div class="modal-note">Este tracker usa una sola fuente por mes (el PDF de Employment Situation) y una sola actualización mensual — mantené el alcance acotado en cada ciclo.</div>
+  </div>
+</div>
+
 </body>
 </html>
